@@ -1,1514 +1,2895 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TrafficVision AI - Predictive Road Safety Analytics Platform</title>
-  
-  <!-- Google Fonts: Plus Jakarta Sans, Vazirmatn, JetBrains Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Vazirmatn:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+# 🚦 INNOVERSE Road Accident Risk Prediction System
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'Vazirmatn', 'sans-serif'],
-            fa: ['Vazirmatn', '"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
-          },
-          colors: {
-            brand: {
-              50: '#ecfeff',
-              100: '#cffaff',
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0891b2',
-              900: '#164e63',
-            },
-            dark: {
-              bg: '#080c14',
-              card: '#0f172a',
-              cardLight: '#1e293b',
-              border: '#334155',
-            }
-          },
-          animation: {
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'radar-spin': 'spin 12s linear infinite',
-          }
-        }
-      }
-    }
-  </script>
+> **The 5th Edition of the INNOVERSE Invention & Innovation Expo – Online Edition**
 
-  <!-- React 18, ReactDOM 18, Babel Standalone -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+An AI-powered road accident risk assessment platform designed to identify **high-risk traffic conditions and geographical areas from historical accident data**.
 
-  <!-- Leaflet CSS & JS + Leaflet Heat Plugin -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" crossorigin=""></script>
+The project combines **XGBoost, LightGBM, CatBoost, geographical clustering, feature engineering, stacking, probability calibration, and a Flask REST API** into a multi-stage machine-learning system.
 
-  <style>
-    /* Custom scrollbars & glowing UI effects */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #080c14;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
-    .glow-emerald {
-      box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.35);
-    }
-    .glow-crimson {
-      box-shadow: 0 0 30px -5px rgba(239, 68, 68, 0.45);
-    }
-    .glow-cyan {
-      box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.3);
-    }
-    .grid-bg {
-      background-size: 32px 32px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    }
-    .glass-card {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(51, 65, 85, 0.6);
-    }
+---
 
-    /* Executive Print Styles */
-    @media print {
-      body {
-        background: #ffffff !important;
-        color: #0f172a !important;
-      }
-      header, footer, button, .no-print, .copilot-widget {
-        display: none !important;
-      }
-      .glass-card {
-        background: #ffffff !important;
-        border: 1px solid #cbd5e1 !important;
-        color: #0f172a !important;
-        box-shadow: none !important;
-      }
-      .print-visible {
-        display: block !important;
-      }
-    }
-  </style>
-</head>
-<body class="bg-[#080c14] text-slate-100 font-sans min-h-screen grid-bg antialiased selection:bg-cyan-500 selection:text-slate-950">
-  <div id="root"></div>
+## 📌 Table of Contents
 
-  <script type="text/babel">
-    const { useState, useEffect, useMemo, useCallback, useRef } = React;
+- [Overview](#-overview)
+- [Project Goals](#-project-goals)
+- [Key Features](#-key-features)
+- [System Architecture](#-system-architecture)
+- [Machine Learning Pipeline](#-machine-learning-pipeline)
+- [Dataset](#-dataset)
+- [Target Definition](#-target-definition)
+- [Feature Engineering](#-feature-engineering)
+- [Ensemble and Stacking](#-ensemble-and-stacking)
+- [Probability Calibration](#-probability-calibration)
+- [Project Structure](#-project-structure)
+- [Requirements](#-requirements)
+- [Installation](#-installation)
+- [Training the Model](#-training-the-model)
+- [Running Predictions](#-running-predictions)
+- [Running the Flask API](#-running-the-flask-api)
+- [API Documentation](#-api-documentation)
+- [Example API Request](#-example-api-request)
+- [Example API Response](#-example-api-response)
+- [Testing Scenarios](#-testing-scenarios)
+- [Input Features](#-input-features)
+- [Output Interpretation](#-output-interpretation)
+- [Model Artifact](#-model-artifact)
+- [Fallback Engine](#-fallback-engine)
+- [Important Scientific Notes](#-important-scientific-notes)
+- [Limitations](#-limitations)
+- [Future Improvements](#-future-improvements)
+- [Competition Context](#-competition-context)
+- [License](#-license)
+- [Disclaimer](#-disclaimer)
 
-    // --- BILINGUAL TRANSLATION DICTIONARY ---
-    const TRANSLATIONS = {
-      en: {
-        expoTag: "INNOVERSE Expo 2026 Competition Entry",
-        appTitle: "TrafficVision AI — Road Safety Analytics Platform",
-        subtitle: "Dataset: US_Accidents_March23.csv (7.7M Records) • Model: innoverse_gold_model_7M.pkl",
-        statusActive: "Ensemble & Predictive Engine Active",
-        presetLabel: "Quick Preset Scenarios:",
-        scenario1: "Critical Winter Storm (Chicago, IL)",
-        scenario2: "Clear Sunny Afternoon (Los Angeles, CA)",
-        scenario3: "Rainy Peak Rush Hour (New York, NY)",
-        scenario4: "Foggy Morning Highway (Miami, FL)",
+---
 
-        // Personas
-        personaPlanner: "Risk Analytics Mode",
-        personaPolice: "Emergency Patrol View",
-        personaCitizen: "Driver Safety View",
+## 🧠 Overview
 
-        // Tabs
-        tabPredictiveRisk: "Stacking ML Risk Score",
-        tabMapAnalysis: "Spatial Hotspot Map & 24h Time-Lapse",
-        tabWhatIfSimulator: "What-If Interactive Risk Simulator",
-        tabAiRecommendations: "OpenRouter Free AI Safety Advisory",
-        tabEconomicRoi: "Economic ROI & Financial Savings",
-        exportPdfBtn: "Export Safety Audit Report (PDF)",
+The **INNOVERSE Road Accident Risk Prediction System** is a machine-learning project for estimating the risk class associated with a road-accident scenario using historical accident records.
 
-        // Form Labels
-        geoHeader: "City & Location",
-        cityLabel: "Select City",
-        stateLabel: "US State Code / Region",
-        
-        weatherHeader: "Weather & Temporal Conditions",
-        hourLabel: "Hour of Day",
-        tempLabel: "Temperature (°F)",
-        windLabel: "Wind Speed (mph)",
-        visLabel: "Visibility (miles)",
-        humidLabel: "Humidity (%)",
-        pressLabel: "Pressure (in)",
-        fetchWeatherBtn: "Fetch Live Weather",
-        
-        infraHeader: "Road Infrastructure & Risk Factors",
-        trafficSignal: "Traffic Signal Present",
-        crossing: "Pedestrian Crossing",
-        junction: "Road Junction / Highway Ramp",
-        giveWay: "Give Way / Stop Sign",
-        railway: "Railway Crossing",
+The system considers several categories of information:
 
-        btnSubmit: "Analyze Accident Risk Score",
-        btnLoading: "Analyzing Ensemble Models...",
+- Geographic location
+- State
+- Distance
+- Time of day
+- Day of week
+- Month
+- Temperature
+- Humidity
+- Atmospheric pressure
+- Visibility
+- Wind speed
+- Road infrastructure
+- Intersections and junctions
+- Traffic signals
+- Railway and station proximity
+- Rush-hour conditions
+- Weekend conditions
 
-        // Analytics Results
-        analyticsHeader: "Ensemble Decision Dashboard",
-        riskProbabilityLabel: "Calibrated Accident Risk Score",
-        decisionCutoff: "Optimal Decision Cutoff Threshold",
-        thresholdDetail: "Calibrated via Isotonic Regression on Stacking Meta-Learner outputs.",
-        highRiskBadge: "CRITICAL ACCIDENT RISK (Class 1)",
-        lowRiskBadge: "LOW RISK / SAFE CONDITIONS (Class 0)",
-        
-        level1Header: "Level-1 Base Model Predictions",
-        level1Desc: "Predictions from 15 cross-validated models across 3 core gradient boosting algorithms",
-        xgbName: "XGBoost Model (5-Fold Avg)",
-        lgbName: "LightGBM Model (5-Fold Avg)",
-        catName: "CatBoost Model (5-Fold Avg)",
+The final prediction engine is not based on a single classifier. Instead, it uses multiple gradient-boosting models and a second-level stacking model.
 
-        level2Header: "Level-2 Meta-Learner Stacking Pipeline",
-        metaLearnerText: "Meta-Learner combines Level-1 probabilities with Logistic Stacking weights & Isotonic Calibration.",
+### Main technologies
 
-        riskFactorsHeader: "Key Environmental & Road Risk Drivers",
-        apiInspectorHeader: "API Request / Response Payload Inspector",
-        rawJsonToggle: "Inspect JSON & Python Backend",
-        closeModal: "Close",
-        flaskBtn: "Python Flask Code",
-        flaskTitle: "Python Flask API Backend (app.py)",
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- XGBoost
+- LightGBM
+- CatBoost
+- Joblib
+- Flask
+- Flask-CORS
 
-        // Map & Simulator Translations
-        mapClusterView: "Cluster Hotspots",
-        mapHeatmapView: "Heatmap Density",
-        selectAnyDayLabel: "Select 2023 Dataset Date (Feeds ML Month/Day Features):",
-        datasetBadge: "📊 Dataset: US Accidents 2016-2023 (7.7M Records)",
-        prevDayBtn: "◀ Prev Day",
-        nextDayBtn: "Next Day ▶",
-        todayBtn: "Default (2023)",
-        singleDayMode: "Single Day View",
-        weeklyCumulativeMode: "7-Day Cumulative Heatmap",
-        timeLapseTitle: "24-Hour Temporal Time-Lapse Slider",
-        simulatorHeader: "What-If Interactive Risk Simulator",
-        simFormulaTitle: "Deterministic Risk Scoring Model Formula",
-        simWeatherLabel: "Weather Condition",
-        simLightingLabel: "Time / Lighting Factor",
-        simRoadLabel: "Road Segment Type",
-        simAccidentsLabel: "Accident Incident Count",
-        simSeverityLabel: "Severity Level (1-4)",
-        simCountermeasuresHeader: "Apply Safety Countermeasures",
-        simHighFriction: "High-Friction Anti-Skid Surface (-25% Risk)",
-        simSmartLed: "Solar Smart LED Illumination (-20% Risk)",
-        simRadarCalming: "Speed Radar & Signal Calibration (-20% Risk)",
-        simBaselineRisk: "Baseline Risk Index",
-        simMitigatedRisk: "Mitigated Risk Index",
-        simReduction: "Risk Reduction Impact",
+---
 
-        // AI Recommendations
-        aiHeader: "Actionable AI Engineering Recommendations",
-        aiSubHeader: "Powered by OpenRouter Free LLM Models (Nemotron, Gemma, GPT-OSS)",
-        aiCausesTitle: "Identified Primary Hazard Causes",
-        aiCountermeasuresTitle: "Recommended Civil Engineering Countermeasures",
-        aiCostEfficiency: "Cost Efficiency & ROI Rating",
-        aiPolicySummary: "Executive Briefing for Municipal Council",
-        aiGenerateBtn: "Generate Actionable AI Engineering Recommendations",
+# 🎯 Project Goals
 
-        // Copilot
-        copilotTitle: "TrafficVision OpenRouter AI Assistant",
-        copilotSubtitle: "Context-Aware Assistant powered by OpenRouter Free Models",
-        copilotPlaceholder: "Ask TrafficVision Copilot about road safety or risk factors...",
-        copilotSend: "Send",
-        quickPill1: "Analyze Hotspots",
-        quickPill2: "30% Risk Reduction Plan",
-        quickPill3: "Financial ROI Summary",
-        quickPill4: "Safety Warning",
+The main objectives are:
 
-        // ROI
-        roiHeader: "Municipal Economic & Safety ROI Calculator",
-        roiPreventedCraches: "Est. Crashes Prevented / Year",
-        roiFinancialSavings: "Est. Financial Claims Saved",
-        roiRatio: "Estimated Project ROI",
-        roiBreakdownTitle: "Cost-Benefit Cost Breakdown (USD)",
+1. Analyze historical road-accident data.
+2. Extract temporal, geographical, weather, and infrastructure patterns.
+3. Identify conditions associated with higher accident risk.
+4. Build a robust ensemble machine-learning system.
+5. Combine predictions from multiple models.
+6. Calibrate the final probability.
+7. Expose the trained model through a REST API.
+8. Provide a foundation for an interactive road-safety application.
 
-        // Theme Customizer
-        themeCustomizerBtn: "Themes & Styling",
-        themeModalTitle: "UI Customization & Theme Preferences",
-        themeModalSubtitle: "Customize color palette, corner shapes, and glowing ambient visual effects.",
-        selectThemeLabel: "Select Color Theme Palette",
-        shapeLabel: "UI Element Border Radius (Corners)",
-        shapeSharp: "Modern Sharp (8px)",
-        shapeSoft: "Soft Rounded (16px)",
-        shapePill: "Smooth Pill (24px)",
-        glowLabel: "Ambient Glow Intensity",
-        glowSubtle: "Subtle Soft",
-        glowGemini: "Gemini Ambient Glow",
-        glowIntense: "High Contrast Neon",
-        defaultGeminiBadge: "Default Theme",
-        applyThemeBtn: "Save & Apply Customization",
-        resetThemeBtn: "Reset to Gemini Default"
-      },
-      fa: {
-        expoTag: "مدخل رسمی مسابقه نمایشگاه نوآوری INNOVERSE 2026",
-        appTitle: "ترافیک‌ویژن هوشمند — پلتفرم تحلیل ایمنی جاده‌ای",
-        subtitle: "دیتاست: US_Accidents_March23.csv (۷.۷ میلیون رکورد) • مدل: innoverse_gold_model_7M.pkl",
-        statusActive: "موتور محاسباتی و انسامبل فعال است",
-        presetLabel: "سناریوهای تست سریع:",
-        scenario1: "طوفان زمستانی بحرانی (شیکاگو، ایلینوی)",
-        scenario2: "روز آفتابی و ایمن (لوس‌آنجلس، کالیفرنیا)",
-        scenario3: "بارش شدید و ترافیک سنگین (نیویورک)",
-        scenario4: "مه صبحگاهی در بزرگراه (میامی، فلوریدا)",
+The project is intended as a **decision-support and research system**, not as a replacement for professional traffic-safety analysis.
 
-        // Personas
-        personaPlanner: "تحلیل ریسک",
-        personaPolice: "نمای امدادی",
-        personaCitizen: "نمای راننده",
+---
 
-        // Tabs
-        tabPredictiveRisk: "پیش‌بینی انسامبل Stacking ML",
-        tabMapAnalysis: "نقشه حرارتی فضایی و تایم‌لپس ۲۴ ساعته",
-        tabWhatIfSimulator: "شبیه‌ساز تعاملی «چه می‌شود اگر»",
-        tabAiRecommendations: "توصیه‌های هوش مصنوعی (مدل‌های رایگان OpenRouter)",
-        tabEconomicRoi: "بازده اقتصادی و صرفه‌جویی مالی",
-        exportPdfBtn: "دانلود گزارش مدیریتی ایمنی (PDF)",
+# ✨ Key Features
 
-        // Form Labels
-        geoHeader: "انتخاب شهر و موقعیت مکانی",
-        cityLabel: "نام شهر",
-        stateLabel: "کد ایالت / منطقه",
-        
-        weatherHeader: "شرایط جوی، آب‌وهوا و زمان",
-        hourLabel: "ساعت شبانه‌روز",
-        tempLabel: "دما (درجه فارنهایت)",
-        windLabel: "سرعت باد (مایل بر ساعت)",
-        visLabel: "حد دید افقی (مایل)",
-        humidLabel: "رطوبت نسبی (درصد)",
-        pressLabel: "فشار جوی (اینچ جیوه)",
-        fetchWeatherBtn: "دریافت آب‌وهوای زنده",
-        
-        infraHeader: "زیرساخت‌های جاده‌ای و ریسک‌نماها",
-        trafficSignal: "وجود چراغ راهنمایی و رانندگی",
-        crossing: "خط‌کشی عابر پیاده",
-        junction: "تقاطع یا رمپ ورودی بزرگراه",
-        giveWay: "تابلوی حق تقدم یا ایست",
-        railway: "تقاطع ریل راه آهن",
+## 1. Multi-model ensemble
 
-        btnSubmit: "محاسبه شاخص ریسک تصادف",
-        btnLoading: "در حال پردازش مدل‌های انسامبل...",
+The training system uses three independent gradient-boosting algorithms:
 
-        // Analytics Results
-        analyticsHeader: "داشبورد تصمیم‌گیری انسامبل",
-        riskProbabilityLabel: "امتیاز کالیبره‌شده ریسک تصادف",
-        decisionCutoff: "آستانه مرز تصمیم‌گیری بهینه",
-        thresholdDetail: "کالیبره‌شده با رگرسیون ایزوتونیک روی خروجی‌های استکینگ meta-learner.",
-        highRiskBadge: "ریسک تصادف بحرانی (کلاس ۱)",
-        lowRiskBadge: "شرایط ایمن / کم‌ریسک (کلاس ۰)",
-        
-        level1Header: "پیش‌بینی مدل‌های پایه Level-1",
-        level1Desc: "خروجی ۱۵ مدل ارزیابی متقابل در ۳ الگوریتم اصلی گرادیان بوستینگ",
-        xgbName: "مدل XGBoost (میانگین ۵-Fold)",
-        lgbName: "مدل LightGBM (میانگین ۵-Fold)",
-        catName: "مدل CatBoost (میانگین ۵-Fold)",
+- **XGBoost**
+- **LightGBM**
+- **CatBoost**
 
-        level2Header: "خط لوله ترکیبی Meta-Learner Stacking",
-        metaLearnerText: "ترکیب هوشمند احتمال‌های الگوریتم‌ها با وزندهی استکینگ لوجستیک و کالیبراسیون ایزوتونیک.",
+Each model learns the same engineered feature space using a different learning strategy.
 
-        riskFactorsHeader: "محرک‌های اصلی ریسک محیطی و جاده‌ای",
-        apiInspectorHeader: "بازرس کد و پاسخ‌های API",
-        rawJsonToggle: "مشاهده JSON و کد پایتون",
-        closeModal: "بستن",
-        flaskBtn: "کد پایتون Flask",
-        flaskTitle: "سرور API پایتون Flask (app.py)",
+---
 
-        // Map & Simulator Translations
-        mapClusterView: "نقاط خوشه‌ای (Cluster)",
-        mapHeatmapView: "نقشه حرارتی (Heatmap)",
-        selectAnyDayLabel: "انتخاب تاریخ از تقویم دیتاست ۲۰۲۳ (استخراج ویژگی ماه و روز هفته):",
-        datasetBadge: "📊 محدوده دیتاست: داده‌های ۷.۷ میلیونی تصادفات آمریکا (۲۰۱۶ تا ۲۰۲۳)",
-        prevDayBtn: "◀ روز قبل",
-        nextDayBtn: "روز بعد ▶",
-        todayBtn: "دیفالت (۲۰۲۳)",
-        singleDayMode: "نمای تک‌روزه",
-        weeklyCumulativeMode: "نقشه حرارتی ۷ روزه مجتمع",
-        timeLapseTitle: "اسلایدر زمانی ۲۴ ساعته (تایم‌لپس)",
-        simulatorHeader: "شبیه‌ساز تعاملی سناریوهای ترافیکی (What-If)",
-        simFormulaTitle: "فرمول قطعی محاسباتی شاخص ریسک (Risk Index)",
-        simWeatherLabel: "شرایط آب و هوایی",
-        simLightingLabel: "فاکتور نور و زمان",
-        simRoadLabel: "نوع قطعه جاده",
-        simAccidentsLabel: "تعداد حوادث رخ‌داده",
-        simSeverityLabel: "سطح شدت حادثه (۱ تا ۴)",
-        simCountermeasuresHeader: "اعمال اقدامات اصلاحی ایمنی",
-        simHighFriction: "روکش ضدلغزش آسفالت HFST (کاهش ۲۵٪ ریسک)",
-        simSmartLed: "روشنایی هوشمند ال‌ای‌دی خورشیدی (کاهش ۲۰٪ ریسک)",
-        simRadarCalming: "رادار سرعت و کالیبراسیون چراغ (کاهش ۲۰٪ ریسک)",
-        simBaselineRisk: "شاخص ریسک اولیه",
-        simMitigatedRisk: "شاخص ریسک اصلاح‌شده",
-        simReduction: "کاهش ریسک ایمنی",
+## 2. 5-Fold Cross-Validation
 
-        // AI Recommendations
-        aiHeader: "توصیه‌های اقدام‌محور مهندسی هوش مصنوعی",
-        aiSubHeader: "مبتنی بر مدل‌های رایگان OpenRouter (Nemotron, Gemma, GPT-OSS)",
-        aiCausesTitle: "دلایل اصلی خطرات شناسایی‌شده",
-        aiCountermeasuresTitle: "اقدامات مهندسی عمران و ترافیک پیشنهادی",
-        aiCostEfficiency: "بازده اقتصادی و رتبه‌بندی سرمایه‌گذاری",
-        aiPolicySummary: "خلاصه مدیریتی برای شورای شهر و مدیریت ترافیک",
-        aiGenerateBtn: "تولید توصیه‌های مهندسی هوش مصنوعی",
+The training pipeline uses:
 
-        // Copilot
-        copilotTitle: "دستیار هوشمند ترافیک‌ویژن",
-        copilotSubtitle: "دستیار آگاه به متن بر پایه مدل‌های رایگان OpenRouter",
-        copilotPlaceholder: "پاسخ به سوالات فنی ایمنی، محاسبه ROI و اقدامات اصلاحی...",
-        copilotSend: "ارسال",
-        quickPill1: "تحلیل نقاط حادثه‌خیز",
-        quickPill2: "برنامه کاهش ۳۰٪ ریسک",
-        quickPill3: "تحلیل بازده اقتصادی",
-        quickPill4: "هشدار گشت اضطراری",
+```text
+StratifiedKFold
+n_splits = 5
+shuffle = True
+random_state = 42
+```
 
-        // ROI
-        roiHeader: "محاسبه‌گر بازده اقتصادی و کاهش خسارات شهرداری",
-        roiPreventedCraches: "تصادفات پیشگیری‌شده سالانه",
-        roiFinancialSavings: "خسارات مالی صرفه‌جویی‌شده",
-        roiRatio: "نرخ بازگشت سرمایه (ROI)",
-        roiBreakdownTitle: "تحلیل هزینه-فایده اصلاحات جاده‌ای (دلار)",
+This produces five validation folds and generates out-of-fold predictions for the stacking stage.
 
-        // Theme Customizer
-        themeCustomizerBtn: "تم و شخصی‌سازی",
-        themeModalTitle: "تنظیمات تم و شخصی‌سازی رابط کاربری (UI)",
-        themeModalSubtitle: "پالت رنگی، انحنای گوشه‌ها و جلوه‌های درخشان نئونی را به دلخواه خود تنظیم کنید.",
-        selectThemeLabel: "انتخاب پالت رنگی رابط کاربری",
-        shapeLabel: "انحنای گوشه‌ها و شعاع کادرها (Corner Radius)",
-        shapeSharp: "مدرن و زاویه‌دار (۸ پیکسل)",
-        shapeSoft: "نرم و انحنادار (۱۶ پیکسل)",
-        shapePill: "کپسولی و کاملاً گرد (۲۴ پیکسل)",
-        glowLabel: "شدت نورپردازی و افکت‌های درخشان (Glow)",
-        glowSubtle: "ملایم و مات",
-        glowGemini: "درخشش شناور جمینای",
-        glowIntense: "نئونی و پرکنتراست",
-        defaultGeminiBadge: "تم پیش‌فرض",
-        applyThemeBtn: "تأیید و اعمال شخصی‌سازی",
-        resetThemeBtn: "بازنشانی به جمینای پیش‌فرض"
-      }
-    };
+---
 
-    // --- MAJOR CITIES & COORDINATES ---
-    const STATE_COORDS = {
-      OH: { lat: 40.4173, lng: -82.9071 },
-      CA: { lat: 36.7783, lng: -119.4179 },
-      FL: { lat: 27.6648, lng: -81.5158 },
-      GA: { lat: 32.1656, lng: -82.9001 },
-      IA: { lat: 41.8780, lng: -93.0977 },
-      NE: { lat: 41.4925, lng: -99.9018 },
-      IL: { lat: 40.6331, lng: -89.3985 },
-      MI: { lat: 44.3148, lng: -85.6024 },
-      NY: { lat: 40.7128, lng: -74.0060 },
-      PA: { lat: 41.2033, lng: -77.1945 },
-      TX: { lat: 31.9686, lng: -99.9018 },
-      WA: { lat: 47.7511, lng: -120.7401 },
-      OR: { lat: 43.8041, lng: -120.5542 },
-      NC: { lat: 35.7596, lng: -79.0193 },
-      VA: { lat: 37.4316, lng: -78.6569 },
-      AZ: { lat: 34.0489, lng: -111.0937 },
-      NV: { lat: 38.8026, lng: -116.4194 }
-    };
+## 3. Level-2 Stacking
 
-    const MAJOR_CITY_COORDS = {
-      'Chicago': { lat: 41.8781, lng: -87.6298 },
-      'Los Angeles': { lat: 34.0522, lng: -118.2437 },
-      'New York': { lat: 40.7128, lng: -74.0060 },
-      'Miami': { lat: 25.7617, lng: -80.1918 },
-      'Houston': { lat: 29.7604, lng: -95.3698 },
-      'San Francisco': { lat: 37.7749, lng: -122.4194 },
-      'Seattle': { lat: 47.6062, lng: -122.3321 },
-      'Dallas': { lat: 32.7767, lng: -96.7970 },
-      'Philadelphia': { lat: 39.9526, lng: -75.1652 },
-      'Phoenix': { lat: 33.4484, lng: -112.0740 }
-    };
+The predictions of XGBoost, LightGBM, and CatBoost are combined into a second-level model:
 
-    const RAW_CITY_RECORDS = [
-      ["Chicago","Cook","IL"],["Los Angeles","Los Angeles","CA"],["New York","New York","NY"],
-      ["Miami","Miami-Dade","FL"],["Houston","Harris","TX"],["San Francisco","San Francisco","CA"],
-      ["Seattle","King","WA"],["Dallas","Dallas","TX"],["Philadelphia","Philadelphia","PA"],
-      ["Phoenix","Maricopa","AZ"]
-    ];
+```text
+XGBoost probability ─┐
+                     ├──> Logistic Regression ──> Calibration ──> Final Risk
+LightGBM probability ┤
+                     │
+CatBoost probability ┘
+```
 
-    const ALL_SUPPORTED_CITIES = RAW_CITY_RECORDS.map(([cityName, countyName, stateCode]) => {
-      const coords = MAJOR_CITY_COORDS[cityName] || STATE_COORDS[stateCode] || { lat: 41.8781, lng: -87.6298 };
-      return { city: cityName, county: countyName, state: stateCode, lat: coords.lat, lng: coords.lng };
+The meta-learner is:
+
+```python
+LogisticRegression(C=1.0, max_iter=1000)
+```
+
+---
+
+## 4. Probability Calibration
+
+The final meta-model probability is calibrated using:
+
+```python
+IsotonicRegression(out_of_bounds='clip')
+```
+
+This is intended to make the reported probability better aligned with the observed target frequency than an uncalibrated classifier score.
+
+---
+
+## 5. Geographical Clustering
+
+The system uses:
+
+```python
+MiniBatchKMeans(
+    n_clusters=50,
+    random_state=42,
+    batch_size=8192
+)
+```
+
+on:
+
+```text
+Start_Lat
+Start_Lng
+```
+
+This converts raw coordinates into a geographical cluster feature.
+
+The resulting feature is:
+
+```text
+Geo_Cluster
+```
+
+---
+
+## 6. Historical State Risk
+
+A historical risk statistic is calculated for each US state:
+
+```text
+State_Historical_Risk
+```
+
+During cross-validation, the state statistic is calculated from the training portion of each fold before being applied to the validation portion.
+
+This reduces direct target leakage during the cross-validation feature-generation stage.
+
+---
+
+# 🏗️ System Architecture
+
+The complete system can be represented as:
+
+```text
+                 US_Accidents_March23.csv
+                           │
+                           ▼
+                  Data Loading & Cleaning
+                           │
+                           ▼
+                    Time Extraction
+                           │
+                           ▼
+                   Target Construction
+                           │
+                           ▼
+                  Feature Engineering
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+          XGBoost       LightGBM      CatBoost
+              │            │            │
+              └────────────┼────────────┘
+                           ▼
+                    OOF Predictions
+                           │
+                           ▼
+                  Logistic Regression
+                    Meta-Learner
+                           │
+                           ▼
+                  Isotonic Calibration
+                           │
+                           ▼
+                 Optimal F1 Threshold
+                           │
+                           ▼
+                  Saved Model Artifact
+                           │
+              ┌────────────┴────────────┐
+              ▼                         ▼
+          test.py                  Flask app.py
+              │                         │
+              ▼                         ▼
+       Batch Prediction             REST API
+```
+
+---
+
+# 🔬 Machine Learning Pipeline
+
+## Step 1 — Data Loading
+
+The training script reads:
+
+```text
+US_Accidents_March23.csv
+```
+
+Only the columns required by the model are loaded.
+
+This reduces unnecessary memory usage compared with loading the entire dataset.
+
+The training code selects fields such as:
+
+- `Severity`
+- `Start_Time`
+- `End_Time`
+- `Start_Lat`
+- `Start_Lng`
+- `Distance(mi)`
+- `Temperature(F)`
+- `Humidity(%)`
+- `Pressure(in)`
+- `Visibility(mi)`
+- `Wind_Speed(mph)`
+- infrastructure indicators
+- `State`
+
+---
+
+## Step 2 — Data Cleaning
+
+The timestamps are converted using:
+
+```python
+pd.to_datetime(..., format='mixed', errors='coerce')
+```
+
+Rows without essential values such as:
+
+- `Start_Time`
+- `Start_Lat`
+- `Start_Lng`
+- `State`
+
+are removed.
+
+Accident duration is calculated in minutes:
+
+```text
+Duration_Minutes =
+(End_Time - Start_Time) / 60
+```
+
+Records with negative durations or durations greater than 1440 minutes are removed.
+
+---
+
+# 🎯 Target Definition
+
+The current training implementation creates a binary target called:
+
+```text
+Risk_Class
+```
+
+The target is constructed from three conditions:
+
+```text
+Severity >= 3
+OR
+(weather hazard score > 25 AND Severity >= 2)
+OR
+Duration_Minutes > 240
+```
+
+In simplified form:
+
+```python
+Risk_Class =
+    (Severity >= 3)
+    OR
+    ((WeatherHazard > 25) & (Severity >= 2))
+    OR
+    (Duration_Minutes > 240)
+```
+
+The result is converted into:
+
+```text
+0 → lower-risk class
+1 → higher-risk class
+```
+
+### ⚠️ Important
+
+This means the current system is primarily predicting a **derived accident-risk class from accident records**, rather than predicting whether an accident will occur at a location where no accident has yet happened.
+
+Therefore, the phrase **"risk prediction"** should be interpreted according to this target definition.
+
+A future version intended to predict *accident occurrence before an accident happens* should use a target and dataset design that explicitly includes non-accident observations.
+
+---
+
+# 🧩 Feature Engineering
+
+The system creates several engineered features.
+
+## Cyclical time features
+
+Time is periodic, so the project represents time using sine/cosine transformations.
+
+### Hour
+
+```text
+Hour_Sin
+Hour_Cos
+```
+
+### Month
+
+```text
+Month_Sin
+Month_Cos
+```
+
+### Day of week
+
+```text
+DayOfWeek_Sin
+DayOfWeek_Cos
+```
+
+This prevents the model from treating values such as hour 23 and hour 0 as extremely far apart.
+
+---
+
+## Rush Hour
+
+The system defines rush hour using:
+
+```text
+Monday–Friday:
+07:00
+08:00
+09:00
+16:00
+17:00
+18:00
+```
+
+Feature:
+
+```text
+Is_Rush_Hour
+```
+
+---
+
+## Weekend
+
+```text
+Is_Weekend
+```
+
+is set when:
+
+```text
+DayOfWeek >= 5
+```
+
+---
+
+## Wind Chill Effect
+
+The engineered feature is:
+
+```text
+Wind_Chill_Effect =
+Temperature(F) - 0.7 × Wind_Speed(mph)
+```
+
+---
+
+## Log Distance
+
+Because accident distance can have a skewed distribution:
+
+```text
+Log_Distance = log(1 + Distance)
+```
+
+is used.
+
+---
+
+## Infrastructure Risk Score
+
+The system aggregates road-infrastructure indicators:
+
+```text
+Amenity
+Bump
+Crossing
+Give_Way
+Junction
+No_Exit
+Railway
+Roundabout
+Station
+Stop
+Traffic_Calming
+Traffic_Signal
+```
+
+into:
+
+```text
+Infrastructure_Risk_Score
+```
+
+The score is the sum of these binary infrastructure indicators.
+
+---
+
+## Geographic Cluster
+
+Latitude and longitude are grouped into 50 geographical clusters.
+
+```text
+Start_Lat
+Start_Lng
+       │
+       ▼
+MiniBatchKMeans
+       │
+       ▼
+Geo_Cluster
+```
+
+---
+
+# 🤖 Base Models
+
+The project uses three gradient-boosting classifiers.
+
+## XGBoost
+
+Main configuration:
+
+```python
+XGBClassifier(
+    n_estimators=400,
+    max_depth=6,
+    learning_rate=0.04,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    scale_pos_weight=pos_weight,
+    random_state=42,
+    n_jobs=-1,
+    tree_method='hist'
+)
+```
+
+---
+
+## LightGBM
+
+Main configuration:
+
+```python
+LGBMClassifier(
+    n_estimators=400,
+    max_depth=6,
+    num_leaves=31,
+    learning_rate=0.04,
+    subsample=0.8,
+    scale_pos_weight=pos_weight,
+    random_state=42,
+    n_jobs=-1
+)
+```
+
+---
+
+## CatBoost
+
+Main configuration:
+
+```python
+CatBoostClassifier(
+    iterations=400,
+    depth=6,
+    learning_rate=0.04,
+    scale_pos_weight=pos_weight,
+    random_seed=42,
+    verbose=0
+)
+```
+
+---
+
+# ⚖️ Class Imbalance Handling
+
+The training script calculates:
+
+```text
+positive samples
+negative samples
+```
+
+and derives:
+
+```text
+pos_weight =
+negative_samples / positive_samples
+```
+
+This value is passed to the three classifiers through:
+
+```text
+scale_pos_weight
+```
+
+The purpose is to reduce the effect of class imbalance during model training.
+
+---
+
+# 🧠 Level-2 Stacking
+
+After the five folds are trained, the project has out-of-fold predictions:
+
+```text
+OOF XGBoost
+OOF LightGBM
+OOF CatBoost
+```
+
+These are combined into:
+
+```python
+X_meta_train = np.column_stack([
+    oof_xgb,
+    oof_lgb,
+    oof_cat
+])
+```
+
+The meta-learner then learns how to combine the three predictions.
+
+---
+
+# 🎯 Probability Calibration
+
+The meta-model produces a raw probability.
+
+The project then applies:
+
+```python
+IsotonicRegression(out_of_bounds='clip')
+```
+
+The resulting value is the final calibrated probability:
+
+```text
+Calibrated Risk Probability
+```
+
+---
+
+# 📏 Decision Threshold
+
+Instead of always using:
+
+```text
+0.50
+```
+
+as the classification threshold, the training pipeline searches for a threshold that maximizes the F1 score on the calibrated OOF predictions.
+
+The threshold is saved in:
+
+```text
+best_threshold
+```
+
+The inference rule is:
+
+```python
+prediction = calibrated_probability >= best_threshold
+```
+
+---
+
+# 📁 Project Structure
+
+A recommended project structure is:
+
+```text
+INNOVERSE-Road-Risk/
+│
+├── train.py
+├── test.py
+├── app.py
+│
+├── US_Accidents_March23.csv
+│
+├── innoverse_gold_model.pkl
+│
+├── .env.example
+├── .gitignore
+├── requirements.txt
+├── README.md
+│
+└── frontend/
+    └── ...
+```
+
+### Main files
+
+| File | Purpose |
+|---|---|
+| `train.py` | Trains the complete multi-stage ML system |
+| `test.py` | Runs prediction tests and sample scenarios |
+| `app.py` | Flask REST API |
+| `US_Accidents_March23.csv` | Historical accident dataset |
+| `innoverse_gold_model.pkl` | Saved trained model artifact |
+| `.env.example` | Example environment configuration |
+| `.gitignore` | Git ignore rules |
+| `README.md` | Project documentation |
+
+---
+
+# 📦 Requirements
+
+Recommended Python version:
+
+```text
+Python 3.10+
+```
+
+Install the main dependencies:
+
+```bash
+pip install numpy pandas scikit-learn joblib
+pip install xgboost lightgbm catboost
+pip install flask flask-cors
+```
+
+Or create a `requirements.txt`:
+
+```text
+numpy
+pandas
+scikit-learn
+joblib
+xgboost
+lightgbm
+catboost
+flask
+flask-cors
+```
+
+Then install:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 🛠️ Installation
+
+## 1. Clone the project
+
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd INNOVERSE-Road-Risk
+```
+
+Replace `<YOUR_REPOSITORY_URL>` with the URL of your GitHub repository.
+
+---
+
+## 2. Create a virtual environment
+
+### Windows
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+---
+
+## 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# 📊 Dataset
+
+The training script expects:
+
+```text
+US_Accidents_March23.csv
+```
+
+The project uses historical accident records containing information about:
+
+- Accident severity
+- Location
+- Time
+- Weather
+- Road conditions
+- Infrastructure
+- Duration
+
+The dataset is read directly by `train.py`.
+
+Example:
+
+```python
+df = pd.read_csv(
+    'US_Accidents_March23.csv',
+    usecols=needed_cols
+)
+```
+
+---
+
+# 🚀 Training the Model
+
+Place the dataset in the project root:
+
+```text
+US_Accidents_March23.csv
+```
+
+Then run:
+
+```bash
+python train.py
+```
+
+The training process performs:
+
+```text
+1. Load dataset
+2. Clean data
+3. Extract time features
+4. Build Risk_Class
+5. Engineer features
+6. Create geographic clusters
+7. Perform 5-fold cross-validation
+8. Train XGBoost
+9. Train LightGBM
+10. Train CatBoost
+11. Generate OOF predictions
+12. Train Logistic Regression meta-learner
+13. Calculate stacking ROC-AUC
+14. Apply isotonic calibration
+15. Find F1-optimal threshold
+16. Fit final scaler
+17. Save model artifact
+```
+
+The final artifact is:
+
+```text
+innoverse_gold_model.pkl
+```
+
+The training script stores:
+
+```python
+{
+    'xgb_models': ...,
+    'lgb_models': ...,
+    'cat_models': ...,
+    'kmeans': ...,
+    'scaler': ...,
+    'meta_learner': ...,
+    'calibrator': ...,
+    'features': ...,
+    'state_map_global': ...,
+    'global_mean_all': ...,
+    'best_threshold': ...
+}
+```
+
+---
+
+# 🧪 Running Predictions
+
+After training:
+
+```bash
+python test.py
+```
+
+The testing script loads the artifact:
+
+```python
+artifact = joblib.load('innoverse_gold_model.pkl')
+```
+
+and restores the ensemble components.
+
+It then:
+
+1. Processes input data.
+2. Applies feature engineering.
+3. Scales the features.
+4. Generates XGBoost probabilities.
+5. Generates LightGBM probabilities.
+6. Generates CatBoost probabilities.
+7. Passes them to the meta-learner.
+8. Calibrates the probability.
+9. Applies the optimal threshold.
+10. Returns the final risk class.
+
+---
+
+# 🌐 Running the Flask API
+
+Start the backend:
+
+```bash
+python app.py
+```
+
+The application listens by default on:
+
+```text
+http://localhost:8000
+```
+
+The application exposes:
+
+```text
+GET  /api/health
+POST /api/predict
+```
+
+---
+
+# ❤️ Health Check API
+
+## Endpoint
+
+```http
+GET /api/health
+```
+
+Example:
+
+```bash
+curl http://localhost:8000/api/health
+```
+
+Example response:
+
+```json
+{
+  "status": "online",
+  "service": "INNOVERSE Stacking Engine",
+  "model_loaded": true,
+  "optimal_threshold": 0.4285
+}
+```
+
+The exact threshold is loaded from the trained artifact when available.
+
+---
+
+# 🔮 Prediction API
+
+## Endpoint
+
+```http
+POST /api/predict
+```
+
+Content type:
+
+```text
+application/json
+```
+
+The API converts the incoming JSON object into a Pandas DataFrame and sends it through the same inference pipeline used by the test system.
+
+---
+
+# 📤 Example API Request
+
+```json
+{
+  "Start_Lat": 41.8781,
+  "Start_Lng": -87.6298,
+  "State": "IL",
+  "Distance(mi)": 12.5,
+  "Hour": 2,
+  "DayOfWeek": 4,
+  "Month": 1,
+  "Temperature(F)": -10.0,
+  "Humidity(%)": 98.0,
+  "Pressure(in)": 28.10,
+  "Visibility(mi)": 0.1,
+  "Wind_Speed(mph)": 50.0,
+  "Amenity": 0,
+  "Bump": 0,
+  "Crossing": 1,
+  "Give_Way": 0,
+  "Junction": 1,
+  "No_Exit": 0,
+  "Railway": 0,
+  "Roundabout": 0,
+  "Station": 0,
+  "Stop": 0,
+  "Traffic_Calming": 0,
+  "Traffic_Signal": 1
+}
+```
+
+---
+
+# 📥 Example API Response
+
+```json
+{
+  "status": "success",
+  "risk_status": "HIGH RISK",
+  "calibrated_prob": 0.82,
+  "prediction_class": 1,
+  "base_models": {
+    "xgb_prob": 0.85,
+    "lgb_prob": 0.79,
+    "cat_prob": 0.81
+  },
+  "best_threshold": 0.4285
+}
+```
+
+> The values above are an illustrative response format. Actual probabilities are produced by the trained model and depend on the input and saved artifact.
+
+---
+
+# 🧾 API Output Fields
+
+| Field | Description |
+|---|---|
+| `status` | API request status |
+| `risk_status` | `HIGH RISK` or `LOW RISK` |
+| `calibrated_prob` | Final calibrated risk probability |
+| `prediction_class` | Binary prediction: `0` or `1` |
+| `base_models.xgb_prob` | XGBoost ensemble probability |
+| `base_models.lgb_prob` | LightGBM ensemble probability |
+| `base_models.cat_prob` | CatBoost ensemble probability |
+| `best_threshold` | Learned classification threshold |
+
+---
+
+# 🧪 Testing Scenarios
+
+The included `test.py` contains sample scenarios.
+
+## Scenario 1 — Critical Conditions
+
+The test includes conditions such as:
+
+- Night-time
+- Very low visibility
+- High wind speed
+- Very high humidity
+- Low temperature
+- Junction
+- Traffic signal
+- Crossing
+
+These features are intentionally designed to represent a difficult road environment.
+
+---
+
+## Scenario 2 — Lower-risk Conditions
+
+The second scenario represents a more favorable environment with:
+
+- Good visibility
+- Mild temperature
+- Low humidity
+- Low wind speed
+- Minimal infrastructure indicators
+
+The actual output should always be taken from the trained model rather than assumed from the scenario description.
+
+---
+
+# 🧩 Input Features
+
+The core model features include:
+
+### Geographic
+
+```text
+Start_Lat
+Start_Lng
+Geo_Cluster
+State_Historical_Risk
+```
+
+### Distance
+
+```text
+Distance(mi)
+Log_Distance
+```
+
+### Time
+
+```text
+Hour
+DayOfWeek
+Month
+Hour_Sin
+Hour_Cos
+DayOfWeek_Sin
+DayOfWeek_Cos
+Month_Sin
+Month_Cos
+Is_Rush_Hour
+Is_Weekend
+```
+
+### Weather
+
+```text
+Temperature(F)
+Humidity(%)
+Pressure(in)
+Visibility(mi)
+Wind_Speed(mph)
+Wind_Chill_Effect
+```
+
+### Road Infrastructure
+
+```text
+Amenity
+Bump
+Crossing
+Give_Way
+Junction
+No_Exit
+Railway
+Roundabout
+Station
+Stop
+Traffic_Calming
+Traffic_Signal
+```
+
+### Infrastructure aggregate
+
+```text
+Infrastructure_Risk_Score
+```
+
+---
+
+# 🔄 Inference Pipeline
+
+For every new prediction:
+
+```text
+Raw JSON / DataFrame
+        │
+        ▼
+Feature Engineering
+        │
+        ├── Cyclical Time Features
+        ├── Rush Hour
+        ├── Weekend
+        ├── Wind Effect
+        ├── State Risk
+        ├── Geo Cluster
+        ├── Log Distance
+        └── Infrastructure Score
+        │
+        ▼
+RobustScaler
+        │
+        ▼
+XGBoost Ensemble
+        │
+        ▼
+LightGBM Ensemble
+        │
+        ▼
+CatBoost Ensemble
+        │
+        ▼
+Logistic Regression Meta-Learner
+        │
+        ▼
+Isotonic Calibration
+        │
+        ▼
+Optimal Threshold
+        │
+        ▼
+Risk Class + Probability
+```
+
+---
+
+# 💾 Model Artifact
+
+The trained model is stored using Joblib:
+
+```text
+innoverse_gold_model.pkl
+```
+
+The artifact contains the complete inference state.
+
+This is important because the application does not only need the classifiers. It also needs:
+
+- Geographic clustering model
+- Feature scaler
+- Meta-learner
+- Probability calibrator
+- Feature list
+- Historical state mapping
+- Global risk mean
+- Optimal threshold
+
+Therefore, **do not delete or replace individual components of the artifact unless the inference code is updated accordingly.**
+
+---
+
+# 🛡️ Robust Scaling
+
+The project uses:
+
+```python
+RobustScaler()
+```
+
+This scaling method is less sensitive to extreme values than standard mean/variance scaling.
+
+The final scaler is fitted on the engineered feature matrix and stored inside the artifact.
+
+---
+
+# 🧯 Fallback Engine
+
+The Flask application contains a fallback mechanism.
+
+If the trained `.pkl` artifact cannot be loaded, the application can activate a lightweight fallback prediction engine.
+
+The fallback estimates a probability using manually defined rules involving:
+
+- Visibility
+- Temperature
+- Wind speed
+- Hour
+- Junction/intersection indicators
+- Distance
+
+This fallback is useful for keeping the API operational during development.
+
+### ⚠️ The fallback is NOT the trained machine-learning model.
+
+For competition demonstrations and scientific evaluation, the real trained artifact should be used.
+
+---
+
+# 🔐 Environment Variables
+
+The application supports a `PORT` environment variable.
+
+Example:
+
+```text
+PORT=8000
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PORT=8000
+python app.py
+```
+
+Linux/macOS:
+
+```bash
+export PORT=8000
+python app.py
+```
+
+---
+
+# 🧹 Git and Security
+
+Do not commit large datasets, model artifacts, or secret configuration files unless required.
+
+Recommended `.gitignore` entries include:
+
+```text
+__pycache__/
+*.pyc
+.venv/
+.env
+*.pkl
+*.csv
+```
+
+If the dataset or trained model is intentionally distributed with the repository, remove the corresponding entries from `.gitignore`.
+
+Never commit real API keys, passwords, tokens, or private credentials.
+
+---
+
+# 📈 Evaluation
+
+The training system reports ROC-AUC for the three base models on each validation fold.
+
+It also calculates a final out-of-fold stacking ROC-AUC:
+
+```text
+Total Stacking OOF ROC-AUC Score
+```
+
+The decision threshold is selected using the F1 score.
+
+Relevant evaluation concepts are:
+
+- ROC-AUC
+- Precision
+- Recall
+- F1-score
+- Probability calibration
+
+### Why ROC-AUC?
+
+ROC-AUC evaluates ranking performance across different thresholds.
+
+### Why F1?
+
+F1 balances precision and recall and is useful when the positive class is important and class distributions are not perfectly balanced.
+
+### Why calibration?
+
+A classifier's raw probability is not necessarily a well-calibrated probability. Isotonic calibration is used to transform the meta-model output into a calibrated score.
+
+---
+
+# ⚠️ Important Scientific Notes
+
+This section is especially important for interpreting the project correctly.
+
+## 1. Risk is a derived target
+
+The current target is constructed using:
+
+```text
+Severity
+Weather hazard
+Accident duration
+```
+
+Therefore, the model is learning a definition of risk created from historical accident records.
+
+It is not a pure causal model of why accidents happen.
+
+---
+
+## 2. This is not causal inference
+
+A high predicted probability does not prove that a particular feature caused an accident.
+
+For example:
+
+```text
+Traffic_Signal = 1
+```
+
+does not mean that traffic signals cause accidents.
+
+A feature may simply be correlated with locations where more accidents are recorded.
+
+---
+
+## 3. It is not a guaranteed prediction
+
+The model produces an estimated probability/class based on learned historical patterns.
+
+It cannot guarantee that an accident will or will not happen.
+
+---
+
+## 4. Geographic risk requires careful interpretation
+
+The geographic cluster represents patterns found in the training data.
+
+It should not automatically be interpreted as a permanent safety classification of a real-world area.
+
+Road design, traffic volume, construction, weather, population, and infrastructure can change over time.
+
+---
+
+# ⚠️ Limitations
+
+Current limitations include:
+
+- The target is derived from accident-record attributes.
+- The dataset represents historical observations.
+- Traffic volume is not directly included in the current feature set.
+- Driver behavior is not directly observed.
+- Real-time traffic information is not included.
+- Real-time road closures are not included.
+- The model does not establish causality.
+- Geographic clustering is based on the available historical coordinates.
+- Prediction quality depends strongly on the training data distribution.
+- A probability should not be interpreted as a guarantee.
+- The fallback engine is rule-based and should not be used as a substitute for the trained model.
+
+---
+
+# 🚀 Future Improvements
+
+Potential future versions can improve the system with:
+
+## Real-time traffic
+
+Integrate:
+
+- Traffic density
+- Average speed
+- Congestion
+- Road closures
+- Traffic incidents
+
+---
+
+## Real-time weather
+
+Integrate:
+
+- Rain
+- Snow
+- Fog
+- Ice
+- Storm conditions
+- Weather radar
+
+---
+
+## Better geographic modeling
+
+Possible approaches:
+
+- H3 spatial indexing
+- Geospatial neural networks
+- Spatial-temporal models
+- Road-network graph models
+
+---
+
+## Temporal forecasting
+
+Instead of only classifying historical accident records, a future version could model:
+
+```text
+Location + Time + Weather + Traffic
+                     │
+                     ▼
+           Probability of Accident
+```
+
+This would require a carefully constructed dataset containing both accident and non-accident observations.
+
+---
+
+## Explainable AI
+
+Future versions could integrate:
+
+```text
+SHAP
+LIME
+Permutation Importance
+```
+
+to explain why a particular prediction is high or low.
+
+Example:
+
+```text
+Risk Score: 81%
+
+Main contributing factors:
+1. Very low visibility
+2. High wind speed
+3. Night-time
+4. Junction
+5. Severe weather conditions
+```
+
+---
+
+## Web Dashboard
+
+A complete frontend can provide:
+
+- Interactive map
+- Risk heatmap
+- Location search
+- Weather information
+- Risk percentage
+- Model explanation
+- Historical trends
+- High-risk region visualization
+
+---
+
+# 🏆 Competition Context
+
+This project was developed for:
+
+**The 5th Edition of the INNOVERSE Invention & Innovation Expo – Online Edition**
+
+The project focuses on applying artificial intelligence and machine learning to road safety and historical accident-risk analysis.
+
+The core innovation is the integration of:
+
+```text
+Historical Accident Data
+        +
+Feature Engineering
+        +
+Geographical Clustering
+        +
+XGBoost
+        +
+LightGBM
+        +
+CatBoost
+        +
+Level-2 Stacking
+        +
+Probability Calibration
+        +
+REST API
+```
+
+This creates a modular AI pipeline that can be connected to a web or mobile interface.
+
+---
+
+# 🧪 Quick Start
+
+The shortest path to run the complete system is:
+
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Put the dataset in the project directory
+# US_Accidents_March23.csv
+
+# 3. Train
+python train.py
+
+# 4. Test
+python test.py
+
+# 5. Start API
+python app.py
+```
+
+Then open:
+
+```text
+http://localhost:8000/api/health
+```
+
+---
+
+# 🔌 Example Frontend Integration
+
+A JavaScript frontend can call the Flask API using:
+
+```javascript
+async function predictRisk(data) {
+    const response = await fetch("http://localhost:8000/api/predict", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
     });
 
-    function getCityCoords(cityName, stateCode) {
-      if (!cityName) return { lat: 41.8781, lng: -87.6298, state: 'IL', county: 'Cook' };
-      const match = ALL_SUPPORTED_CITIES.find(c => c.city.toLowerCase() === cityName.toLowerCase());
-      if (match) return match;
-      const st = (stateCode || 'IL').toUpperCase();
-      const stCoord = STATE_COORDS[st] || STATE_COORDS['IL'];
-      let hash = 0;
-      for (let i = 0; i < cityName.length; i++) {
-        hash = (hash << 5) - hash + cityName.charCodeAt(i);
-        hash |= 0;
-      }
-      return {
-        lat: Number((stCoord.lat + (((Math.abs(hash) % 100) - 50) / 400)).toFixed(4)),
-        lng: Number((stCoord.lng + ((((Math.abs(hash) >> 2) % 100) - 50) / 400)).toFixed(4)),
-        state: st,
-        county: `${cityName} Area`
-      };
-    }
-
-    // --- DETERMINISTIC PREDICTIVE RISK INDEX FORMULA ---
-    function calculatePredictiveRiskIndex({ severityWeight, accidentCount, roadFactorWeight, weatherFactor, lightingFactor, mitigations = 0 }) {
-      const baseNumerator = severityWeight * accidentCount;
-      const baseDenominator = Math.max(0.4, roadFactorWeight);
-      const rawScore = (baseNumerator / baseDenominator) * weatherFactor * lightingFactor * 2.8;
-      const mitigatedScore = rawScore * (1 - mitigations);
-      return Math.min(100, Math.max(2, Math.round(mitigatedScore)));
-    }
-
-    // --- SEARCHABLE CITY INPUT ---
-    function SearchableCityInput({ value, onChangeCity, onSelectCity, t }) {
-      const [query, setQuery] = useState(value || '');
-      const [isOpen, setIsOpen] = useState(false);
-      const containerRef = useRef(null);
-
-      useEffect(() => { setQuery(value || ''); }, [value]);
-
-      const matches = useMemo(() => {
-        if (!query.trim()) return ALL_SUPPORTED_CITIES;
-        const q = query.toLowerCase().trim();
-        return ALL_SUPPORTED_CITIES.filter(c => c.city.toLowerCase().includes(q) || c.state.toLowerCase().includes(q));
-      }, [query]);
-
-      return (
-        <div ref={containerRef} className="relative space-y-1">
-          <label className="block text-xs font-medium text-slate-400">{t.cityLabel}</label>
-          <input
-            type="text"
-            value={query}
-            onFocus={() => setIsOpen(true)}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setIsOpen(true);
-              onChangeCity(e.target.value);
-            }}
-            placeholder="🔍 Search city dataset..."
-            className="w-full bg-slate-950/90 border border-slate-700/80 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 font-sans shadow-inner"
-          />
-          {isOpen && (
-            <div className="absolute z-50 mt-1 w-full bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-h-60 overflow-y-auto text-xs divide-y divide-slate-800">
-              {matches.map((item, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    setQuery(item.city);
-                    setIsOpen(false);
-                    onSelectCity(item);
-                  }}
-                  className="px-3 py-2.5 hover:bg-cyan-950 hover:text-cyan-300 cursor-pointer flex justify-between items-center"
-                >
-                  <span className="font-semibold text-slate-200">{item.city}</span>
-                  <span className="px-1.5 py-0.5 bg-slate-800 text-cyan-400 font-mono text-[10px] rounded">{item.state}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // --- SYNTHETIC DATASET GENERATOR ---
-    function generateDatasetRecordsForDate(dateStr, cityName, stateName, centerLat, centerLng) {
-      let hash = 0;
-      const seedStr = `${dateStr}_${cityName}`;
-      for (let i = 0; i < seedStr.length; i++) {
-        hash = (hash << 5) - hash + seedStr.charCodeAt(i);
-        hash |= 0;
-      }
-      
-      const count = 12 + (Math.abs(hash) % 15);
-      const records = [];
-      const streetTypes = ['I-95', 'Main St', 'US-101', 'Grand Ave', 'Broadway', 'State Hwy 4'];
-      
-      for (let i = 0; i < count; i++) {
-        const itemHash = Math.abs(hash + i * 997);
-        const hour = itemHash % 24;
-        const latOffset = ((itemHash % 100) - 50) / 600;
-        const lngOffset = (((itemHash >> 2) % 100) - 50) / 600;
-        const severity = (itemHash % 4) + 1;
-        const distance = Number((0.1 + (itemHash % 50) / 10).toFixed(1));
-        const temp = 20 + (itemHash % 65);
-        const visibility = (itemHash % 10 === 0) ? 0.5 : 10.0;
-        
-        records.push({
-          id: `ACC-${dateStr}-${i}`,
-          hour,
-          lat: Number((centerLat + latOffset).toFixed(4)),
-          lng: Number((centerLng + lngOffset).toFixed(4)),
-          severity,
-          street: streetTypes[i % streetTypes.length],
-          distance,
-          temp,
-          visibility,
-          humidity: 40 + (itemHash % 50),
-          windSpeed: 2 + (itemHash % 25),
-          crossing: (itemHash % 3 === 0) ? 1.0 : 0.0,
-          junction: (itemHash % 4 === 0) ? 1.0 : 0.0,
-          trafficSignal: (itemHash % 2 === 0) ? 1.0 : 0.0
-        });
-      }
-      return records;
-    }
-
-    // --- LEAFLET SPATIAL MAP COMPONENT ---
-    function LeafletMapComponent({ lat, lng, cityName, stateName, selectedDate, onDateChange, persona, t, onSelectRecordForML }) {
-      const [viewMode, setViewMode] = useState('heatmap');
-      const [dayRangeMode, setDayRangeMode] = useState('single');
-      const [internalDate, setInternalDate] = useState(selectedDate || '2023-03-15');
-      const [selectedHour, setSelectedHour] = useState(-1);
-      const [isPlaying, setIsPlaying] = useState(false);
-
-      const mapRef = useRef(null);
-      const mapInstanceRef = useRef(null);
-      const markersGroupRef = useRef(null);
-      const heatLayerRef = useRef(null);
-
-      const activeDateStr = selectedDate || internalDate;
-
-      const datasetRecords = useMemo(() => {
-        return generateDatasetRecordsForDate(activeDateStr, cityName, stateName, lat, lng);
-      }, [activeDateStr, cityName, stateName, lat, lng]);
-
-      const handleDateSelect = (newDate) => {
-        if (!newDate) return;
-        setInternalDate(newDate);
-        if (onDateChange) {
-          onDateChange(newDate);
-        }
-      };
-
-      const stepDay = (days) => {
-        const d = new Date(activeDateStr || Date.now());
-        if (!isNaN(d.getTime())) {
-          d.setDate(d.getDate() + days);
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          handleDateSelect(`${yyyy}-${mm}-${dd}`);
-        }
-      };
-
-      const dayFormatted = useMemo(() => {
-        try {
-          const d = new Date(activeDateStr);
-          if (isNaN(d.getTime())) return '';
-          return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        } catch (e) {
-          return activeDateStr;
-        }
-      }, [activeDateStr]);
-
-      const filteredRecords = useMemo(() => {
-        if (selectedHour === -1) return datasetRecords;
-        return datasetRecords.filter(r => r.hour === selectedHour);
-      }, [datasetRecords, selectedHour]);
-
-      useEffect(() => {
-        let interval = null;
-        if (isPlaying) {
-          interval = setInterval(() => {
-            setSelectedHour(prev => (prev >= 23 ? 0 : prev + 1));
-          }, 800);
-        }
-        return () => { if (interval) clearInterval(interval); };
-      }, [isPlaying]);
-
-      useEffect(() => {
-        if (!mapRef.current) return;
-        if (!mapInstanceRef.current) {
-          const map = L.map(mapRef.current, {
-            center: [lat, lng],
-            zoom: 12,
-            zoomControl: false
-          });
-
-          L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            maxZoom: 19
-          }).addTo(map);
-
-          L.control.zoom({ position: 'topright' }).addTo(map);
-
-          markersGroupRef.current = L.layerGroup().addTo(map);
-          mapInstanceRef.current = map;
-        } else {
-          mapInstanceRef.current.setView([lat, lng], 12);
-        }
-      }, [lat, lng]);
-
-      useEffect(() => {
-        const map = mapInstanceRef.current;
-        if (!map) return;
-
-        if (markersGroupRef.current) markersGroupRef.current.clearLayers();
-        if (heatLayerRef.current) map.removeLayer(heatLayerRef.current);
-
-        if (viewMode === 'cluster') {
-          filteredRecords.forEach(rec => {
-            const color = rec.severity >= 3 ? '#ef4444' : rec.severity === 2 ? '#f59e0b' : '#10b981';
-            const circle = L.circleMarker([rec.lat, rec.lng], {
-              radius: 6 + rec.severity * 2,
-              fillColor: color,
-              color: '#ffffff',
-              weight: 1.5,
-              opacity: 0.9,
-              fillOpacity: 0.8
-            });
-
-            const popupContent = `
-              <div style="color: #0f172a; font-family: sans-serif; padding: 4px;">
-                <div style="font-weight: bold; font-size: 13px; margin-bottom: 2px;">${rec.street}</div>
-                <div style="font-size: 11px; color: #475569;">Time: ${rec.hour}:00 | Severity: ${rec.severity}/4</div>
-                <div style="font-size: 11px; color: #475569;">Temp: ${rec.temp}°F | Vis: ${rec.visibility} mi</div>
-                <button id="btn-load-${rec.id}" style="margin-top: 6px; width: 100%; background: #0891b2; color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
-                  Load into Stacking ML
-                </button>
-              </div>
-            `;
-
-            circle.bindPopup(popupContent);
-            circle.on('popupopen', () => {
-              const btn = document.getElementById(`btn-load-${rec.id}`);
-              if (btn && onSelectRecordForML) {
-                btn.onclick = () => {
-                  onSelectRecordForML(rec);
-                  circle.closePopup();
-                };
-              }
-            });
-
-            markersGroupRef.current.addLayer(circle);
-          });
-        } else {
-          const heatPoints = filteredRecords.map(r => [r.lat, r.lng, r.severity / 4]);
-          if (L.heatLayer) {
-            heatLayerRef.current = L.heatLayer(heatPoints, {
-              radius: 25,
-              blur: 15,
-              maxZoom: 15,
-              gradient: { 0.2: '#06b6d4', 0.5: '#eab308', 0.8: '#ef4444' }
-            }).addTo(map);
-          }
-        }
-      }, [filteredRecords, viewMode, onSelectRecordForML]);
-
-      return (
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode('heatmap')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  viewMode === 'heatmap' ? 'bg-cyan-500 text-slate-950 font-bold shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                🔥 {t.mapHeatmapView}
-              </button>
-              <button
-                onClick={() => setViewMode('cluster')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  viewMode === 'cluster' ? 'bg-cyan-500 text-slate-950 font-bold shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                }`}
-              >
-                📍 {t.mapClusterView}
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-400">{t.selectAnyDayLabel}</span>
-              <button onClick={() => stepDay(-1)} className="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-200">
-                {t.prevDayBtn}
-              </button>
-              <input
-                type="date"
-                value={activeDateStr}
-                onChange={(e) => handleDateSelect(e.target.value)}
-                className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-cyan-400 font-mono text-xs focus:outline-none"
-              />
-              <button onClick={() => stepDay(1)} className="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-200">
-                {t.nextDayBtn}
-              </button>
-            </div>
-          </div>
-
-          <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl h-[420px]">
-            <div ref={mapRef} className="w-full h-full z-0" />
-            <div className="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono text-slate-300">
-              📍 {cityName}, {stateName} ({datasetRecords.length} records) {dayFormatted && `• ${dayFormatted}`}
-            </div>
-          </div>
-
-          <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-slate-200 flex items-center gap-2">
-                ⏱️ {t.timeLapseTitle}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className={`px-3 py-1 rounded-md font-bold text-xs ${
-                    isPlaying ? 'bg-amber-500 text-slate-950' : 'bg-cyan-500 text-slate-950'
-                  }`}
-                >
-                  {isPlaying ? '⏸ Pause' : '▶ Play Time-Lapse'}
-                </button>
-                <button
-                  onClick={() => setSelectedHour(-1)}
-                  className={`px-2 py-1 rounded text-xs ${
-                    selectedHour === -1 ? 'bg-slate-700 text-cyan-400' : 'bg-slate-800 text-slate-400'
-                  }`}
-                >
-                  All 24 Hours
-                </button>
-              </div>
-            </div>
-
-            <input
-              type="range"
-              min="-1"
-              max="23"
-              value={selectedHour}
-              onChange={(e) => setSelectedHour(parseInt(e.target.value))}
-              className="w-full accent-cyan-500 bg-slate-950 h-2 rounded-lg cursor-pointer"
-            />
-
-            <div className="flex justify-between text-[10px] font-mono text-slate-400">
-              <span>All Day</span>
-              <span>00:00</span>
-              <span>06:00</span>
-              <span>12:00</span>
-              <span>18:00</span>
-              <span>23:00</span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // --- WHAT-IF SIMULATOR COMPONENT ---
-    function WhatIfSimulatorComponent({ t, currentInputs }) {
-      const [severity, setSeverity] = useState(2);
-      const [incidents, setIncidents] = useState(15);
-      const [roadType, setRoadType] = useState('intersection');
-      const [weather, setWeather] = useState('clear');
-      const [lighting, setLighting] = useState('day');
-
-      const [hfst, setHfst] = useState(false);
-      const [smartLed, setSmartLed] = useState(false);
-      const [speedCalib, setSpeedCalib] = useState(false);
-
-      const roadFactorWeight = useMemo(() => {
-        if (roadType === 'highway') return 0.8;
-        if (roadType === 'intersection') return 1.5;
-        return 1.2;
-      }, [roadType]);
-
-      const weatherFactor = useMemo(() => {
-        if (weather === 'snow') return 2.2;
-        if (weather === 'rain') return 1.6;
-        if (weather === 'fog') return 1.8;
-        return 1.0;
-      }, [weather]);
-
-      const lightingFactor = useMemo(() => {
-        if (lighting === 'night') return 1.5;
-        if (lighting === 'dawn') return 1.2;
-        return 1.0;
-      }, [lighting]);
-
-      const totalMitigation = useMemo(() => {
-        let sum = 0;
-        if (hfst) sum += 0.25;
-        if (smartLed) sum += 0.20;
-        if (speedCalib) sum += 0.20;
-        return Math.min(0.65, sum);
-      }, [hfst, smartLed, speedCalib]);
-
-      const baselineRisk = useMemo(() => {
-        return calculatePredictiveRiskIndex({
-          severityWeight: severity,
-          accidentCount: incidents,
-          roadFactorWeight,
-          weatherFactor,
-          lightingFactor,
-          mitigations: 0
-        });
-      }, [severity, incidents, roadFactorWeight, weatherFactor, lightingFactor]);
-
-      const mitigatedRisk = useMemo(() => {
-        return calculatePredictiveRiskIndex({
-          severityWeight: severity,
-          accidentCount: incidents,
-          roadFactorWeight,
-          weatherFactor,
-          lightingFactor,
-          mitigations: totalMitigation
-        });
-      }, [severity, incidents, roadFactorWeight, weatherFactor, lightingFactor, totalMitigation]);
-
-      const riskDiff = baselineRisk - mitigatedRisk;
-
-      return (
-        <div className="space-y-6">
-          <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              🧪 {t.simulatorHeader}
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="space-y-1">
-                <label className="text-slate-400">{t.simWeatherLabel}</label>
-                <select
-                  value={weather}
-                  onChange={(e) => setWeather(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200"
-                >
-                  <option value="clear">☀️ Clear / Sunny (1.0x)</option>
-                  <option value="rain">🌧️ Rain / Wet (1.6x)</option>
-                  <option value="fog">🌫️ Heavy Fog (1.8x)</option>
-                  <option value="snow">❄️ Snow / Ice (2.2x)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-slate-400">{t.simLightingLabel}</label>
-                <select
-                  value={lighting}
-                  onChange={(e) => setLighting(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200"
-                >
-                  <option value="day">☀️ Day / High Sunlight (1.0x)</option>
-                  <option value="dawn">🌅 Dawn / Dusk (1.2x)</option>
-                  <option value="night">🌙 Dark Night / Unlit (1.5x)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-slate-400">{t.simRoadLabel}</label>
-                <select
-                  value={roadType}
-                  onChange={(e) => setRoadType(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-200"
-                >
-                  <option value="highway">🛣️ Highway Ramp (0.8x)</option>
-                  <option value="arterial">🚗 Main Arterial (1.2x)</option>
-                  <option value="intersection">🚥 High-Traffic Intersection (1.5x)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
-              <div className="space-y-1">
-                <label className="text-slate-400">{t.simAccidentsLabel}: <span className="text-cyan-400 font-bold">{incidents}</span></label>
-                <input
-                  type="range" min="1" max="50" value={incidents}
-                  onChange={(e) => setIncidents(parseInt(e.target.value))}
-                  className="w-full accent-cyan-500 bg-slate-950 h-2 rounded"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-slate-400">{t.simSeverityLabel}: <span className="text-cyan-400 font-bold">{severity}</span></label>
-                <input
-                  type="range" min="1" max="4" value={severity}
-                  onChange={(e) => setSeverity(parseInt(e.target.value))}
-                  className="w-full accent-cyan-500 bg-slate-950 h-2 rounded"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
-            <h4 className="text-sm font-bold text-slate-200">{t.simCountermeasuresHeader}</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2 transition-all ${
-                hfst ? 'bg-cyan-950/60 border-cyan-500 text-cyan-200' : 'bg-slate-900 border-slate-800 text-slate-400'
-              }`}>
-                <input type="checkbox" checked={hfst} onChange={(e) => setHfst(e.target.checked)} className="accent-cyan-500" />
-                <span>{t.simHighFriction}</span>
-              </label>
-
-              <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2 transition-all ${
-                smartLed ? 'bg-cyan-950/60 border-cyan-500 text-cyan-200' : 'bg-slate-900 border-slate-800 text-slate-400'
-              }`}>
-                <input type="checkbox" checked={smartLed} onChange={(e) => setSmartLed(e.target.checked)} className="accent-cyan-500" />
-                <span>{t.simSmartLed}</span>
-              </label>
-
-              <label className={`p-3 rounded-xl border cursor-pointer flex items-center gap-2 transition-all ${
-                speedCalib ? 'bg-cyan-950/60 border-cyan-500 text-cyan-200' : 'bg-slate-900 border-slate-800 text-slate-400'
-              }`}>
-                <input type="checkbox" checked={speedCalib} onChange={(e) => setSpeedCalib(e.target.checked)} className="accent-cyan-500" />
-                <span>{t.simRadarCalming}</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl text-center">
-              <span className="text-xs text-slate-400">{t.simBaselineRisk}</span>
-              <div className="text-3xl font-black text-rose-500 font-mono mt-1">{baselineRisk} / 100</div>
-            </div>
-
-            <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl text-center">
-              <span className="text-xs text-slate-400">{t.simMitigatedRisk}</span>
-              <div className="text-3xl font-black text-emerald-400 font-mono mt-1">{mitigatedRisk} / 100</div>
-            </div>
-
-            <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl text-center">
-              <span className="text-xs text-slate-400">{t.simReduction}</span>
-              <div className="text-3xl font-black text-cyan-400 font-mono mt-1">
-                -{riskDiff} pts ({Math.round(totalMitigation * 100)}%)
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // --- AI RECOMMENDATIONS COMPONENT ---
-    function AiRecommendationsComponent({ t, riskData, currentInputs }) {
-      const [loading, setLoading] = useState(false);
-      const [aiResponse, setAiResponse] = useState(null);
-
-      const generateRecommendations = async () => {
-        setLoading(true);
-        setTimeout(() => {
-          setAiResponse({
-            causes: [
-              "High combination of low visibility and severe precipitation.",
-              "Elevated infrastructure complexity score at target intersection.",
-              "Sub-optimal speed limits during peak rush hour conditions."
-            ],
-            countermeasures: [
-              "Install High-Friction Surface Treatment (HFST) on road approaches.",
-              "Implement adaptive LED signalization with radar-triggered warning signs.",
-              "Deploy dynamic speed threshold messaging during adverse weather events."
-            ],
-            costEfficiency: "High ROI (Estimated 3.4x savings on accident claims within 12 months)",
-            policyBrief: "The municipal traffic authority should prioritize intersection retrofits along key arterial corridors to reduce critical collision severity by up to 35%."
-          });
-          setLoading(false);
-        }, 1200);
-      };
-
-      return (
-        <div className="space-y-6">
-          <div className="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                🤖 {t.aiHeader}
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">{t.aiSubHeader}</p>
-            </div>
-            <button
-              onClick={generateRecommendations}
-              disabled={loading}
-              className="px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all"
-            >
-              {loading ? '⏳ Generating AI Insights...' : t.aiGenerateBtn}
-            </button>
-          </div>
-
-          {aiResponse && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
-                  ⚠️ {t.aiCausesTitle}
-                </h4>
-                <ul className="space-y-2 text-xs text-slate-300">
-                  {aiResponse.causes.map((c, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-rose-500">•</span> {c}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3">
-                <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  🛠️ {t.aiCountermeasuresTitle}
-                </h4>
-                <ul className="space-y-2 text-xs text-slate-300">
-                  {aiResponse.countermeasures.map((c, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="text-emerald-500">•</span> {c}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-2">
-                <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
-                  📈 {t.aiCostEfficiency}
-                </h4>
-                <p className="text-xs text-slate-300">{aiResponse.costEfficiency}</p>
-              </div>
-
-              <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-2">
-                <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                  🏛️ {t.aiPolicySummary}
-                </h4>
-                <p className="text-xs text-slate-300">{aiResponse.policyBrief}</p>
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    // --- ECONOMIC ROI COMPONENT ---
-    function EconomicRoiComponent({ t, riskData }) {
-      const prob = riskData ? riskData.calibrated_prob : 0.45;
-      const preventedCrashes = Math.round(prob * 42);
-      const financialSavings = (preventedCrashes * 38500).toLocaleString();
-      const roiRatio = (prob * 4.2).toFixed(1);
-
-      return (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl text-center space-y-1">
-              <span className="text-xs text-slate-400">{t.roiPreventedCraches}</span>
-              <div className="text-3xl font-black text-cyan-400 font-mono">{preventedCrashes} / yr</div>
-            </div>
-
-            <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl text-center space-y-1">
-              <span className="text-xs text-slate-400">{t.roiFinancialSavings}</span>
-              <div className="text-3xl font-black text-emerald-400 font-mono">${financialSavings}</div>
-            </div>
-
-            <div className="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl text-center space-y-1">
-              <span className="text-xs text-slate-400">{t.roiRatio}</span>
-              <div className="text-3xl font-black text-amber-400 font-mono">{roiRatio}x</div>
-            </div>
-          </div>
-
-          <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
-            <h4 className="text-sm font-bold text-slate-200">{t.roiBreakdownTitle}</h4>
-            <div className="divide-y divide-slate-800 text-xs">
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">HFST Surface Installation Cost</span>
-                <span className="font-mono text-slate-200">$45,000</span>
-              </div>
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">Smart LED Signal Calibration</span>
-                <span className="font-mono text-slate-200">$18,000</span>
-              </div>
-              <div className="py-2.5 flex justify-between">
-                <span className="text-slate-400">Estimated Medical & Claims Cost Saved</span>
-                <span className="font-mono text-emerald-400">+${financialSavings}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // --- MAIN APP COMPONENT ---
-    function App() {
-      const [lang, setLang] = useState('en');
-      const t = TRANSLATIONS[lang];
-
-      const [persona, setPersona] = useState('planner');
-      const [activeTab, setActiveTab] = useState('predictive');
-
-      const [cityName, setCityName] = useState('Chicago');
-      const [stateCode, setStateCode] = useState('IL');
-      const [lat, setLat] = useState(41.8781);
-      const [lng, setLng] = useState(-87.6298);
-
-      const [hour, setHour] = useState(2);
-      const [temp, setTemp] = useState(-10.0);
-      const [wind, setWind] = useState(50.0);
-      const [vis, setVis] = useState(0.1);
-      const [humidity, setHumidity] = useState(98.0);
-      const [pressure, setPressure] = useState(28.10);
-
-      const [trafficSignal, setTrafficSignal] = useState(1.0);
-      const [crossing, setCrossing] = useState(1.0);
-      const [junction, setJunction] = useState(1.0);
-      const [giveWay, setGiveWay] = useState(0.0);
-      const [railway, setRailway] = useState(0.0);
-
-      const [loading, setLoading] = useState(false);
-      const [riskData, setRiskData] = useState({
-        calibrated_prob: 0.8842,
-        prediction_class: 1,
-        risk_status: "HIGH RISK",
-        base_models: { xgb_prob: 0.862, lgb_prob: 0.891, cat_prob: 0.875 },
-        best_threshold: 0.4285
-      });
-
-      const applyPreset = (p) => {
-        if (p === 'chicago') {
-          setCityName('Chicago'); setStateCode('IL'); setLat(41.8781); setLng(-87.6298);
-          setHour(2); setTemp(-10.0); setWind(50.0); setVis(0.1); setHumidity(98.0); setPressure(28.10);
-          setTrafficSignal(1.0); setCrossing(1.0); setJunction(1.0);
-        } else if (p === 'la') {
-          setCityName('Los Angeles'); setStateCode('CA'); setLat(34.0522); setLng(-118.2437);
-          setHour(14); setTemp(75.0); setWind(5.0); setVis(10.0); setHumidity(30.0); setPressure(29.95);
-          setTrafficSignal(0.0); setCrossing(0.0); setJunction(0.0);
-        } else if (p === 'ny') {
-          setCityName('New York'); setStateCode('NY'); setLat(40.7128); setLng(-74.0060);
-          setHour(18); setTemp(45.0); setWind(15.0); setVis(2.0); setHumidity(85.0); setPressure(29.50);
-          setTrafficSignal(1.0); setCrossing(1.0); setJunction(1.0);
-        } else if (p === 'miami') {
-          setCityName('Miami'); setStateCode('FL'); setLat(25.7617); setLng(-80.1918);
-          setHour(6); setTemp(78.0); setWind(8.0); setVis(1.0); setHumidity(92.0); setPressure(30.02);
-          setTrafficSignal(1.0); setCrossing(0.0); setJunction(1.0);
-        }
-      };
-
-      const handleAnalyzeRisk = async () => {
-        setLoading(true);
-        setTimeout(() => {
-          let score = 0.20;
-          if (vis < 2.0) score += 0.30;
-          if (temp < 32.0) score += 0.20;
-          if (wind > 30.0) score += 0.15;
-          if (junction > 0) score += 0.10;
-          if (crossing > 0) score += 0.05;
-
-          const prob = Math.min(0.98, Math.max(0.03, score));
-          const isHigh = prob >= 0.4285;
-
-          setRiskData({
-            calibrated_prob: Number(prob.toFixed(4)),
-            prediction_class: isHigh ? 1 : 0,
-            risk_status: isHigh ? "HIGH RISK" : "LOW RISK",
-            base_models: {
-              xgb_prob: Number((prob * 0.98).toFixed(4)),
-              lgb_prob: Number((prob * 1.01).toFixed(4)),
-              cat_prob: Number(prob.toFixed(4))
+    return await response.json();
+}
+```
+
+Example:
+
+```javascript
+const result = await predictRisk({
+    Start_Lat: 41.8781,
+    Start_Lng: -87.6298,
+    State: "IL",
+    Distance: 2.5,
+    Hour: 18,
+    DayOfWeek: 4,
+    Month: 1,
+    "Temperature(F)": 20,
+    "Humidity(%)": 85,
+    "Pressure(in)": 29.1,
+    "Visibility(mi)": 2,
+    "Wind_Speed(mph)": 25,
+    Junction: 1,
+    Crossing: 1,
+    "Traffic_Signal": 1
+});
+
+console.log(result);
+```
+
+---
+
+# 📌 Recommended Repository Description
+
+You can use this short description for GitHub:
+
+> AI-powered road accident risk assessment system using XGBoost, LightGBM, CatBoost, geographical clustering, stacking, probability calibration, and a Flask REST API, developed for the 5th Edition of the INNOVERSE Invention & Innovation Expo.
+
+---
+
+# 🔑 Keywords
+
+```text
+Artificial Intelligence
+Machine Learning
+Road Safety
+Accident Prediction
+Risk Prediction
+Traffic Safety
+Road Accident Analysis
+XGBoost
+LightGBM
+CatBoost
+Ensemble Learning
+Stacking
+Probability Calibration
+Isotonic Regression
+Geospatial Machine Learning
+KMeans
+MiniBatchKMeans
+Python
+Flask
+REST API
+Data Science
+INNOVERSE
+```
+
+---
+
+# 📜 License
+
+Add the license appropriate for your project.
+
+For example:
+
+```text
+MIT License
+```
+
+If the project uses a dataset with separate licensing terms, the dataset license must also be respected.
+
+---
+
+# ⚠️ Disclaimer
+
+This project is an experimental artificial-intelligence and machine-learning research system.
+
+The predictions are based on historical data and the target definition used during training. They should not be treated as guaranteed forecasts, official road-safety ratings, emergency guidance, or professional traffic-engineering advice.
+
+The system should be independently validated before being used in any real-world safety-critical environment.
+
+---
+
+# 👨‍💻 Author
+
+**Shervin Moosavi**
+
+AI & Machine Learning Project
+
+**INNOVERSE – Invention & Innovation Expo**
+
+---
+
+## ⭐ Project Pipeline at a Glance
+
+```text
+                ┌─────────────────────────┐
+                │ Historical Accident Data│
+                └────────────┬────────────┘
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ Data Cleaning & Parsing │
+                └────────────┬────────────┘
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ Target Construction     │
+                │      Risk_Class          │
+                └────────────┬────────────┘
+                             │
+                             ▼
+                ┌─────────────────────────┐
+                │ Feature Engineering      │
+                │ Time + Weather + Geo     │
+                │ Infrastructure           │
+                └────────────┬────────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              ▼              ▼              ▼
+         ┌─────────┐    ┌─────────┐    ┌─────────┐
+         │ XGBoost │    │LightGBM │    │ CatBoost│
+         └────┬────┘    └────┬────┘    └────┬────┘
+              │              │              │
+              └──────────────┼──────────────┘
+                             ▼
+                    ┌─────────────────┐
+                    │ Level-2 Stacking│
+                    │ Logistic Reg.   │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Isotonic        │
+                    │ Calibration     │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Optimal F1      │
+                    │ Threshold       │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Risk Probability│
+                    │ + Risk Class    │
+                    └────────┬────────┘
+                             │
+                    ┌────────┴────────┐
+                    ▼                 ▼
+               Python Test       Flask REST API
+```
+
+---
+
+## 🌟 Final Note
+
+The project demonstrates how multiple machine-learning techniques can be combined into a single end-to-end road-risk assessment system:
+
+**Data → Feature Engineering → Geographic Modeling → Ensemble Learning → Stacking → Calibration → API → Application**
+
+The architecture is designed to be extensible, allowing future versions to incorporate real-time traffic, weather, road-network information, explainable AI, and true accident-occurrence forecasting.
+
+---
+
+# 🇮🇷 مستندات فارسی
+
+## 🚦 معرفی پروژه
+
+**سامانه هوشمند پیش‌بینی ریسک تصادفات رانندگی و شناسایی مناطق پرخطر**
+
+این پروژه برای **پنجمین دوره نمایشگاه اختراعات و نوآوری INNOVERSE – نسخه آنلاین** توسعه داده شده است.
+
+هدف سامانه، تحلیل داده‌های تاریخی تصادفات و استفاده از الگوریتم‌های یادگیری ماشین برای ارزیابی کلاس ریسک یک سناریوی تصادف است.
+
+سامانه اطلاعات مختلفی را بررسی می‌کند، از جمله:
+
+- موقعیت جغرافیایی
+- ایالت
+- زمان وقوع
+- روز هفته
+- ماه
+- فاصله
+- دما
+- رطوبت
+- فشار هوا
+- میزان دید
+- سرعت باد
+- زیرساخت‌های جاده
+- تقاطع‌ها
+- چراغ راهنمایی
+- راه‌آهن و ایستگاه
+- شرایط ساعات پرترافیک
+- روزهای تعطیل آخر هفته
+
+---
+
+## 🎯 هدف پروژه
+
+اهداف اصلی پروژه عبارت‌اند از:
+
+1. تحلیل داده‌های تاریخی تصادفات.
+2. استخراج الگوهای زمانی، جغرافیایی، آب‌وهوایی و زیرساختی.
+3. شناسایی شرایط مرتبط با ریسک بالاتر.
+4. ساخت یک سیستم یادگیری ماشین چندمدلی.
+5. ترکیب خروجی چند مدل مختلف.
+6. کالیبره کردن احتمال نهایی.
+7. ارائه مدل از طریق REST API.
+8. فراهم کردن زیرساخت برای اتصال به یک وب‌اپلیکیشن یا اپلیکیشن موبایل.
+
+---
+
+# ⭐ قابلیت‌های اصلی
+
+### 🤖 یادگیری ماشین چندمدلی
+
+سه مدل اصلی در پروژه استفاده شده‌اند:
+
+- XGBoost
+- LightGBM
+- CatBoost
+
+هر سه مدل روی ویژگی‌های مهندسی‌شده آموزش داده می‌شوند و سپس خروجی آن‌ها وارد مرحله Stacking می‌شود.
+
+---
+
+### 🔀 Stacking دو سطحی
+
+معماری سیستم دو سطح دارد.
+
+در سطح اول:
+
+```text
+XGBoost
+LightGBM
+CatBoost
+```
+
+احتمال ریسک را تولید می‌کنند.
+
+سپس خروجی این سه مدل به یک مدل سطح دوم داده می‌شود:
+
+```text
+Logistic Regression
+```
+
+بنابراین:
+
+```text
+XGBoost ──┐
+          │
+LightGBM ─┼──> Meta-Learner ──> Calibration ──> Risk
+          │
+CatBoost ─┘
+```
+
+---
+
+### 🗺️ خوشه‌بندی جغرافیایی
+
+برای پیدا کردن الگوهای جغرافیایی از:
+
+```python
+MiniBatchKMeans(n_clusters=50)
+```
+
+استفاده شده است.
+
+مختصات:
+
+```text
+Start_Lat
+Start_Lng
+```
+
+به خوشه‌های جغرافیایی تبدیل می‌شوند و ویژگی زیر ساخته می‌شود:
+
+```text
+Geo_Cluster
+```
+
+---
+
+# 📊 داده مورد استفاده
+
+فایل اصلی داده:
+
+```text
+US_Accidents_March23.csv
+```
+
+این داده شامل اطلاعات تاریخی تصادفات جاده‌ای در آمریکا است.
+
+اطلاعات مورد استفاده پروژه شامل موارد زیر است:
+
+### اطلاعات تصادف
+
+```text
+Severity
+Start_Time
+End_Time
+```
+
+### موقعیت
+
+```text
+Start_Lat
+Start_Lng
+State
+```
+
+### آب‌وهوا
+
+```text
+Temperature(F)
+Humidity(%)
+Pressure(in)
+Visibility(mi)
+Wind_Speed(mph)
+```
+
+### زیرساخت
+
+```text
+Amenity
+Bump
+Crossing
+Give_Way
+Junction
+No_Exit
+Railway
+Roundabout
+Station
+Stop
+Traffic_Calming
+Traffic_Signal
+```
+
+---
+
+# 🎯 تعریف Risk Class
+
+در نسخه فعلی پروژه، متغیر هدف:
+
+```text
+Risk_Class
+```
+
+است.
+
+این متغیر به صورت ترکیبی از سه شرط ساخته می‌شود:
+
+```text
+Severity >= 3
+```
+
+یا:
+
+```text
+Weather Hazard > 25
+AND
+Severity >= 2
+```
+
+یا:
+
+```text
+Duration_Minutes > 240
+```
+
+در نتیجه:
+
+```text
+0 = Low Risk Class
+1 = High Risk Class
+```
+
+### ⚠️ نکته مهم
+
+این Target از اطلاعات خود رکوردهای تصادف ساخته شده است.
+
+بنابراین مدل فعلی از نظر علمی بیشتر یک **سیستم طبقه‌بندی ریسک بر اساس تعریف Target موجود در داده‌های تاریخی** است و نباید آن را بدون توضیح به عنوان پیش‌بینی قطعی وقوع تصادف در آینده معرفی کرد.
+
+برای ساخت یک مدل واقعی «احتمال وقوع تصادف قبل از وقوع»، باید داده‌هایی شامل نمونه‌های تصادف و عدم وقوع تصادف در بازه‌های زمانی و مکانی مشخص طراحی شوند.
+
+---
+
+# 🧩 مهندسی ویژگی‌ها
+
+پروژه چندین ویژگی جدید تولید می‌کند.
+
+## ⏰ ویژگی‌های زمانی
+
+برای ساعت:
+
+```text
+Hour_Sin
+Hour_Cos
+```
+
+برای ماه:
+
+```text
+Month_Sin
+Month_Cos
+```
+
+برای روز هفته:
+
+```text
+DayOfWeek_Sin
+DayOfWeek_Cos
+```
+
+این کار باعث می‌شود مدل ماهیت چرخه‌ای زمان را بهتر یاد بگیرد.
+
+---
+
+## 🚗 ساعت شلوغی
+
+ویژگی:
+
+```text
+Is_Rush_Hour
+```
+
+برای ساعات پرترافیک روزهای کاری تعریف می‌شود:
+
+```text
+07:00
+08:00
+09:00
+16:00
+17:00
+18:00
+```
+
+---
+
+## 📅 آخر هفته
+
+ویژگی:
+
+```text
+Is_Weekend
+```
+
+برای روزهای شنبه و یکشنبه در تعریف عددی دیتاست فعال می‌شود.
+
+---
+
+## 🌡️ اثر دما و باد
+
+ویژگی:
+
+```text
+Wind_Chill_Effect
+```
+
+از رابطه زیر ساخته می‌شود:
+
+```text
+Temperature - (Wind Speed × 0.7)
+```
+
+---
+
+## 📏 تبدیل لگاریتمی فاصله
+
+برای کاهش اثر مقادیر بسیار بزرگ:
+
+```text
+Log_Distance = log(1 + Distance)
+```
+
+ساخته می‌شود.
+
+---
+
+## 🚦 امتیاز زیرساختی
+
+تمام ویژگی‌های زیرساختی با یکدیگر جمع می‌شوند:
+
+```text
+Amenity
+Bump
+Crossing
+Give_Way
+Junction
+No_Exit
+Railway
+Roundabout
+Station
+Stop
+Traffic_Calming
+Traffic_Signal
+```
+
+و ویژگی:
+
+```text
+Infrastructure_Risk_Score
+```
+
+ساخته می‌شود.
+
+---
+
+# ⚖️ مدیریت عدم تعادل کلاس‌ها
+
+در صورتی که تعداد نمونه‌های کلاس مثبت و منفی برابر نباشد، پروژه وزن کلاس مثبت را محاسبه می‌کند:
+
+```text
+Positive Weight =
+Negative Samples / Positive Samples
+```
+
+سپس این مقدار در مدل‌های XGBoost، LightGBM و CatBoost به عنوان:
+
+```text
+scale_pos_weight
+```
+
+استفاده می‌شود.
+
+هدف این است که مدل نسبت به کلاس کم‌تعداد حساسیت بیشتری داشته باشد.
+
+---
+
+# 🔬 اعتبارسنجی پنج‌گانه
+
+پروژه از:
+
+```text
+StratifiedKFold
+```
+
+با تنظیمات:
+
+```text
+5 Folds
+Shuffle = True
+Random State = 42
+```
+
+استفاده می‌کند.
+
+در هر Fold:
+
+1. داده آموزش و اعتبارسنجی جدا می‌شود.
+2. اطلاعات تاریخی State فقط از بخش آموزش Fold محاسبه می‌شود.
+3. مدل XGBoost آموزش داده می‌شود.
+4. مدل LightGBM آموزش داده می‌شود.
+5. مدل CatBoost آموزش داده می‌شود.
+6. پیش‌بینی Out-of-Fold تولید می‌شود.
+
+این پیش‌بینی‌ها برای مرحله Stacking استفاده می‌شوند.
+
+---
+
+# 🧠 مدل سطح دوم
+
+خروجی سه مدل:
+
+```text
+OOF XGBoost
+OOF LightGBM
+OOF CatBoost
+```
+
+به شکل زیر ترکیب می‌شوند:
+
+```python
+X_meta_train = np.column_stack([
+    oof_xgb,
+    oof_lgb,
+    oof_cat
+])
+```
+
+سپس:
+
+```python
+LogisticRegression()
+```
+
+به عنوان Meta-Learner آموزش داده می‌شود.
+
+---
+
+# 🎯 کالیبراسیون احتمال
+
+احتمال تولیدشده توسط Meta-Learner مستقیماً به عنوان احتمال نهایی استفاده نمی‌شود.
+
+ابتدا با:
+
+```python
+IsotonicRegression(out_of_bounds='clip')
+```
+
+کالیبره می‌شود.
+
+نتیجه:
+
+```text
+Calibrated Risk Probability
+```
+
+است.
+
+---
+
+# 📈 انتخاب Threshold
+
+به جای استفاده اجباری از:
+
+```text
+0.50
+```
+
+پروژه بهترین Threshold را بر اساس F1 Score پیدا می‌کند.
+
+سپس:
+
+```text
+Probability >= Best Threshold
+```
+
+به عنوان:
+
+```text
+High Risk
+```
+
+در نظر گرفته می‌شود.
+
+---
+
+# 🏗️ معماری کامل پروژه
+
+```text
+US Accidents Dataset
+        │
+        ▼
+Data Cleaning
+        │
+        ▼
+Time Processing
+        │
+        ▼
+Risk Class Construction
+        │
+        ▼
+Feature Engineering
+        │
+        ├───────────────┐
+        ▼               ▼
+Geographical       Weather/Time
+Clustering         Features
+        │               │
+        └───────┬───────┘
+                ▼
+        ┌───────────────┐
+        │   XGBoost     │
+        ├───────────────┤
+        │   LightGBM    │
+        ├───────────────┤
+        │   CatBoost    │
+        └───────┬───────┘
+                ▼
+         OOF Predictions
+                │
+                ▼
+       Logistic Regression
+         Meta-Learner
+                │
+                ▼
+      Isotonic Calibration
+                │
+                ▼
+       Optimal F1 Threshold
+                │
+                ▼
+      Final Risk Prediction
+                │
+          ┌─────┴─────┐
+          ▼           ▼
+       test.py      Flask API
+```
+
+---
+
+# 📁 ساختار پروژه
+
+ساختار پیشنهادی:
+
+```text
+INNOVERSE-Road-Risk/
+│
+├── train.py
+├── test.py
+├── app.py
+│
+├── US_Accidents_March23.csv
+│
+├── innoverse_gold_model.pkl
+│
+├── .env.example
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
+
+| فایل | کاربرد |
+|---|---|
+| `train.py` | آموزش کل سیستم |
+| `test.py` | تست مدل |
+| `app.py` | سرور Flask و API |
+| `US_Accidents_March23.csv` | دیتاست تاریخی |
+| `innoverse_gold_model.pkl` | مدل آموزش‌دیده |
+| `.env.example` | نمونه تنظیمات محیطی |
+| `.gitignore` | فایل‌های خارج از Git |
+| `README.md` | مستندات پروژه |
+
+---
+
+# ⚙️ نصب پروژه
+
+ابتدا محیط مجازی بسازید.
+
+### Windows
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+سپس:
+
+```bash
+pip install -r requirements.txt
+```
+
+یا:
+
+```bash
+pip install numpy pandas scikit-learn joblib
+pip install xgboost lightgbm catboost
+pip install flask flask-cors
+```
+
+---
+
+# 🚀 آموزش مدل
+
+ابتدا فایل دیتاست را در پوشه پروژه قرار دهید:
+
+```text
+US_Accidents_March23.csv
+```
+
+سپس:
+
+```bash
+python train.py
+```
+
+در پایان فایل زیر ساخته می‌شود:
+
+```text
+innoverse_gold_model.pkl
+```
+
+این فایل تمام اجزای لازم برای Inference را نگهداری می‌کند.
+
+---
+
+# 🧪 اجرای تست
+
+بعد از آموزش:
+
+```bash
+python test.py
+```
+
+این فایل:
+
+1. مدل‌ها را Load می‌کند.
+2. ورودی را پردازش می‌کند.
+3. Feature Engineering را اجرا می‌کند.
+4. XGBoost را اجرا می‌کند.
+5. LightGBM را اجرا می‌کند.
+6. CatBoost را اجرا می‌کند.
+7. Stacking را اجرا می‌کند.
+8. Probability را Calibration می‌کند.
+9. Threshold را اعمال می‌کند.
+10. نتیجه نهایی را نمایش می‌دهد.
+
+---
+
+# 🌐 اجرای API
+
+برای اجرای Backend:
+
+```bash
+python app.py
+```
+
+سرور به صورت پیش‌فرض روی:
+
+```text
+http://localhost:8000
+```
+
+اجرا می‌شود.
+
+---
+
+# ❤️ بررسی وضعیت سرور
+
+Endpoint:
+
+```http
+GET /api/health
+```
+
+مثال:
+
+```bash
+curl http://localhost:8000/api/health
+```
+
+نمونه پاسخ:
+
+```json
+{
+  "status": "online",
+  "service": "INNOVERSE Stacking Engine",
+  "model_loaded": true,
+  "optimal_threshold": 0.4285
+}
+```
+
+---
+
+# 🔮 API پیش‌بینی ریسک
+
+Endpoint:
+
+```http
+POST /api/predict
+```
+
+نوع محتوا:
+
+```text
+application/json
+```
+
+---
+
+# 📤 نمونه درخواست
+
+```json
+{
+  "Start_Lat": 41.8781,
+  "Start_Lng": -87.6298,
+  "State": "IL",
+  "Distance(mi)": 12.5,
+  "Hour": 2,
+  "DayOfWeek": 4,
+  "Month": 1,
+  "Temperature(F)": -10.0,
+  "Humidity(%)": 98.0,
+  "Pressure(in)": 28.10,
+  "Visibility(mi)": 0.1,
+  "Wind_Speed(mph)": 50.0,
+  "Amenity": 0,
+  "Bump": 0,
+  "Crossing": 1,
+  "Give_Way": 0,
+  "Junction": 1,
+  "No_Exit": 0,
+  "Railway": 0,
+  "Roundabout": 0,
+  "Station": 0,
+  "Stop": 0,
+  "Traffic_Calming": 0,
+  "Traffic_Signal": 1
+}
+```
+
+---
+
+# 📥 نمونه پاسخ
+
+```json
+{
+  "status": "success",
+  "risk_status": "HIGH RISK",
+  "calibrated_prob": 0.82,
+  "prediction_class": 1,
+  "base_models": {
+    "xgb_prob": 0.85,
+    "lgb_prob": 0.79,
+    "cat_prob": 0.81
+  },
+  "best_threshold": 0.4285
+}
+```
+
+مقادیر بالا فقط نمونه فرمت پاسخ هستند و مقدار واقعی توسط مدل آموزش‌دیده محاسبه می‌شود.
+
+---
+
+# 📊 معنی خروجی‌ها
+
+| خروجی | معنی |
+|---|---|
+| `status` | وضعیت درخواست API |
+| `risk_status` | وضعیت High Risk یا Low Risk |
+| `calibrated_prob` | احتمال کالیبره‌شده |
+| `prediction_class` | کلاس نهایی 0 یا 1 |
+| `xgb_prob` | خروجی XGBoost |
+| `lgb_prob` | خروجی LightGBM |
+| `cat_prob` | خروجی CatBoost |
+| `best_threshold` | آستانه بهینه مدل |
+
+---
+
+# 🧪 سناریوهای آزمایشی
+
+## 🚨 سناریوی پرخطر
+
+در `test.py` یک سناریوی سخت شامل مواردی مانند:
+
+- شب
+- دید بسیار کم
+- باد شدید
+- رطوبت بالا
+- دمای پایین
+- Junction
+- Crossing
+- Traffic Signal
+
+قرار داده شده است.
+
+این سناریو برای بررسی رفتار مدل در شرایط دشوار طراحی شده است.
+
+---
+
+## ✅ سناریوی کم‌خطرتر
+
+سناریوی دوم شرایط مطلوب‌تری دارد، مانند:
+
+- دید مناسب
+- دمای مناسب
+- باد کم
+- رطوبت پایین
+- زیرساخت‌های خطرساز کمتر
+
+نتیجه واقعی باید از مدل دریافت شود و نباید مقدار آن از قبل فرض شود.
+
+---
+
+# 💾 فایل مدل
+
+مدل با Joblib ذخیره می‌شود:
+
+```text
+innoverse_gold_model.pkl
+```
+
+این فایل شامل:
+
+```text
+XGBoost Models
+LightGBM Models
+CatBoost Models
+KMeans
+Scaler
+Meta-Learner
+Calibrator
+Features
+State Risk Mapping
+Global Mean
+Best Threshold
+```
+
+است.
+
+بنابراین فقط داشتن مدل‌های XGBoost یا LightGBM کافی نیست و تمام Artifact باید حفظ شود.
+
+---
+
+# 🛡️ سیستم Fallback
+
+در `app.py` یک سیستم جایگزین نیز وجود دارد.
+
+اگر فایل مدل اصلی پیدا نشود یا قابل Load نباشد، Flask می‌تواند وارد حالت Fallback شود.
+
+این حالت بر اساس قواعد ساده‌ای مثل:
+
+```text
+Visibility
+Temperature
+Wind Speed
+Hour
+Junction
+Crossing
+Traffic Signal
+Distance
+```
+
+یک احتمال تقریبی ایجاد می‌کند.
+
+### ⚠️ توجه
+
+Fallback مدل آموزش‌دیده اصلی نیست.
+
+برای ارائه رسمی پروژه، مسابقه و ارزیابی علمی باید از:
+
+```text
+innoverse_gold_model.pkl
+```
+
+استفاده شود.
+
+---
+
+# 📈 ارزیابی مدل
+
+در زمان آموزش، ROC-AUC مدل‌های پایه محاسبه می‌شود:
+
+```text
+XGBoost ROC-AUC
+LightGBM ROC-AUC
+CatBoost ROC-AUC
+```
+
+همچنین ROC-AUC نهایی Stacking به صورت Out-of-Fold محاسبه می‌شود.
+
+برای انتخاب Threshold نیز F1 Score استفاده شده است.
+
+معیارهای مهم:
+
+```text
+ROC-AUC
+Precision
+Recall
+F1-Score
+Probability Calibration
+```
+
+---
+
+# ⚠️ محدودیت‌های علمی
+
+این پروژه محدودیت‌هایی دارد:
+
+- Target از داده‌های تصادف ساخته شده است.
+- مدل رابطه علت و معلولی را اثبات نمی‌کند.
+- داده‌ها تاریخی هستند.
+- ترافیک لحظه‌ای در مدل فعلی وجود ندارد.
+- رفتار راننده مستقیماً اندازه‌گیری نمی‌شود.
+- بسته بودن جاده‌ها به صورت Real-Time لحاظ نشده است.
+- شرایط لحظه‌ای جاده به صورت کامل مدل نشده است.
+- خوشه‌بندی جغرافیایی بر اساس داده‌های موجود انجام شده است.
+- احتمال خروجی مدل تضمین وقوع یا عدم وقوع تصادف نیست.
+
+---
+
+# 🚀 قابلیت‌های پیشنهادی برای نسخه بعدی
+
+در نسخه‌های آینده می‌توان موارد زیر را اضافه کرد:
+
+### 🚗 داده ترافیک Real-Time
+
+```text
+Traffic Density
+Average Speed
+Congestion
+Road Closure
+Traffic Incidents
+```
+
+### 🌧️ آب‌وهوای لحظه‌ای
+
+```text
+Rain
+Snow
+Fog
+Ice
+Storm
+Weather Radar
+```
+
+### 🗺️ تحلیل جغرافیایی پیشرفته
+
+```text
+H3
+Road Network
+Spatial-Temporal Models
+Graph Neural Networks
+```
+
+### 🧠 Explainable AI
+
+با:
+
+```text
+SHAP
+LIME
+Permutation Importance
+```
+
+می‌توان توضیح داد چرا ریسک یک سناریو بالا تشخیص داده شده است.
+
+مثلاً:
+
+```text
+Risk: 81%
+
+Main Factors:
+1. Very Low Visibility
+2. High Wind Speed
+3. Night Time
+4. Junction
+5. Severe Weather
+```
+
+---
+
+# 🌐 اتصال به Frontend
+
+یک Frontend می‌تواند از API استفاده کند:
+
+```javascript
+async function predictRisk(data) {
+    const response = await fetch(
+        "http://localhost:8000/api/predict",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
             },
-            best_threshold: 0.4285
-          });
-          setLoading(false);
-        }, 800);
-      };
+            body: JSON.stringify(data)
+        }
+    );
 
-      const currentInputs = {
-        cityName, stateCode, lat, lng, hour, temp, wind, vis, humidity, pressure,
-        trafficSignal, crossing, junction, giveWay, railway
-      };
+    return await response.json();
+}
+```
 
-      return (
-        <div className="min-h-screen pb-12">
-          {/* Header */}
-          <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
-            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg glow-cyan">
-                  TV
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-base font-bold text-slate-100">{t.appTitle}</h1>
-                    <span className="px-2 py-0.5 bg-cyan-950 border border-cyan-800 text-cyan-400 font-mono text-[10px] rounded-full">
-                      🏆 {t.expoTag}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400">{t.subtitle}</p>
-                </div>
-              </div>
+به این ترتیب معماری می‌تواند به شکل زیر باشد:
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setLang(lang === 'en' ? 'fa' : 'en')}
-                  className="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs font-mono text-cyan-400 hover:bg-slate-800 transition-all"
-                >
-                  🌐 {lang === 'en' ? 'فارسی' : 'English'}
-                </button>
-              </div>
-            </div>
-          </header>
+```text
+React / HTML / JavaScript
+          │
+          ▼
+      Flask API
+          │
+          ▼
+   Machine Learning
+          │
+          ▼
+   Risk Prediction
+```
 
-          {/* Main Layout */}
-          <main className="max-w-7xl mx-auto px-4 mt-6 space-y-6">
-            {/* Presets & Personas Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 p-3 rounded-2xl border border-slate-800/80">
-              <div className="flex items-center gap-2 text-xs">
-                <span className="text-slate-400 font-medium">{t.presetLabel}</span>
-                <button onClick={() => applyPreset('chicago')} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200">
-                  ❄️ Chicago Storm
-                </button>
-                <button onClick={() => applyPreset('la')} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200">
-                  ☀️ LA Sunny
-                </button>
-                <button onClick={() => applyPreset('ny')} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200">
-                  🌧️ NY Rush
-                </button>
-                <button onClick={() => applyPreset('miami')} className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200">
-                  🌫️ Miami Fog
-                </button>
-              </div>
+---
 
-              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-                <button
-                  onClick={() => setPersona('planner')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
-                    persona === 'planner' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'
-                  }`}
-                >
-                  📊 {t.personaPlanner}
-                </button>
-                <button
-                  onClick={() => setPersona('police')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
-                    persona === 'police' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'
-                  }`}
-                >
-                  🚓 {t.personaPolice}
-                </button>
-                <button
-                  onClick={() => setPersona('citizen')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
-                    persona === 'citizen' ? 'bg-cyan-500 text-slate-950 font-bold' : 'text-slate-400'
-                  }`}
-                >
-                  🚗 {t.personaCitizen}
-                </button>
-              </div>
-            </div>
+# 🏆 بخش مسابقه
 
-            {/* Navigation Tabs */}
-            <div className="flex border-b border-slate-800 gap-2 overflow-x-auto text-xs font-semibold">
-              <button
-                onClick={() => setActiveTab('predictive')}
-                className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'predictive' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                🧠 {t.tabPredictiveRisk}
-              </button>
-              <button
-                onClick={() => setActiveTab('map')}
-                className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'map' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                🗺️ {t.tabMapAnalysis}
-              </button>
-              <button
-                onClick={() => setActiveTab('simulator')}
-                className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'simulator' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                🧪 {t.tabWhatIfSimulator}
-              </button>
-              <button
-                onClick={() => setActiveTab('ai')}
-                className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'ai' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                🤖 {t.tabAiRecommendations}
-              </button>
-              <button
-                onClick={() => setActiveTab('roi')}
-                className={`pb-3 px-3 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === 'roi' ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                💰 {t.tabEconomicRoi}
-              </button>
-            </div>
+این پروژه برای:
 
-            {/* Tab Views */}
-            {activeTab === 'predictive' && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Input Controls */}
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-4">
-                    <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider">{t.geoHeader}</h2>
-                    <SearchableCityInput
-                      value={cityName}
-                      onChangeCity={setCityName}
-                      onSelectCity={(item) => {
-                        setCityName(item.city);
-                        setStateCode(item.state);
-                        setLat(item.lat);
-                        setLng(item.lng);
-                      }}
-                      t={t}
-                    />
-                  </div>
+**The 5th Edition of the INNOVERSE Invention & Innovation Expo – Online Edition**
 
-                  <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 text-xs">
-                    <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider">{t.weatherHeader}</h2>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-400">{t.tempLabel}</label>
-                        <input type="number" value={temp} onChange={(e) => setTemp(parseFloat(e.target.value))} className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100" />
-                      </div>
-                      <div>
-                        <label className="text-slate-400">{t.windLabel}</label>
-                        <input type="number" value={wind} onChange={(e) => setWind(parseFloat(e.target.value))} className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100" />
-                      </div>
-                      <div>
-                        <label className="text-slate-400">{t.visLabel}</label>
-                        <input type="number" value={vis} onChange={(e) => setVis(parseFloat(e.target.value))} className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100" />
-                      </div>
-                      <div>
-                        <label className="text-slate-400">{t.hourLabel}</label>
-                        <input type="number" min="0" max="23" value={hour} onChange={(e) => setHour(parseInt(e.target.value))} className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-100" />
-                      </div>
-                    </div>
-                  </div>
+توسعه داده شده است.
 
-                  <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-3 text-xs">
-                    <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider">{t.infraHeader}</h2>
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={trafficSignal === 1.0} onChange={(e) => setTrafficSignal(e.target.checked ? 1.0 : 0.0)} className="accent-cyan-500" />
-                        <span>{t.trafficSignal}</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={crossing === 1.0} onChange={(e) => setCrossing(e.target.checked ? 1.0 : 0.0)} className="accent-cyan-500" />
-                        <span>{t.crossing}</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={junction === 1.0} onChange={(e) => setJunction(e.target.checked ? 1.0 : 0.0)} className="accent-cyan-500" />
-                        <span>{t.junction}</span>
-                      </label>
-                    </div>
-                  </div>
+تمرکز اصلی پروژه استفاده از هوش مصنوعی برای تحلیل ریسک تصادفات جاده‌ای و شناسایی الگوهای پرخطر بر اساس داده‌های تاریخی است.
 
-                  <button
-                    onClick={handleAnalyzeRisk}
-                    disabled={loading}
-                    className="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-sm rounded-xl shadow-xl transition-all"
-                  >
-                    {loading ? t.btnLoading : t.btnSubmit}
-                  </button>
-                </div>
+نوآوری اصلی سیستم در ترکیب موارد زیر است:
 
-                {/* Inference Output */}
-                <div className="lg:col-span-7 space-y-4">
-                  {riskData && (
-                    <div className="space-y-4">
-                      <div className={`p-6 rounded-2xl border transition-all ${
-                        riskData.prediction_class === 1
-                          ? 'bg-rose-950/40 border-rose-800/80 glow-crimson'
-                          : 'bg-emerald-950/40 border-emerald-800/80 glow-emerald'
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.analyticsHeader}</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
-                            riskData.prediction_class === 1 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                          }`}>
-                            {riskData.prediction_class === 1 ? t.highRiskBadge : t.lowRiskBadge}
-                          </span>
-                        </div>
+```text
+Historical Accident Data
+        +
+Feature Engineering
+        +
+Geographical Clustering
+        +
+XGBoost
+        +
+LightGBM
+        +
+CatBoost
+        +
+Stacking
+        +
+Probability Calibration
+        +
+REST API
+```
 
-                        <div className="mt-4 flex items-baseline gap-3">
-                          <span className="text-5xl font-black font-mono text-slate-100">
-                            {(riskData.calibrated_prob * 100).toFixed(1)}%
-                          </span>
-                          <span className="text-xs text-slate-400">{t.riskProbabilityLabel}</span>
-                        </div>
+---
 
-                        <div className="mt-4 pt-4 border-t border-slate-800/80 text-xs text-slate-400">
-                          {t.decisionCutoff}: <span className="font-mono text-cyan-400">{riskData.best_threshold}</span> — {t.thresholdDetail}
-                        </div>
-                      </div>
+# 📌 توضیح کوتاه برای GitHub
 
-                      {/* Level-1 Breakdown */}
-                      <div className="glass-card p-5 rounded-2xl border border-slate-800 space-y-3">
-                        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">{t.level1Header}</h3>
-                        <p className="text-xs text-slate-400">{t.level1Desc}</p>
+می‌توان برای توضیحات Repository از این متن استفاده کرد:
 
-                        <div className="grid grid-cols-3 gap-3 pt-2 text-center text-xs">
-                          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl">
-                            <span className="text-slate-400 block">{t.xgbName}</span>
-                            <span className="font-mono font-bold text-slate-200 text-sm mt-1 block">
-                              {(riskData.base_models.xgb_prob * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl">
-                            <span className="text-slate-400 block">{t.lgbName}</span>
-                            <span className="font-mono font-bold text-slate-200 text-sm mt-1 block">
-                              {(riskData.base_models.lgb_prob * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                          <div className="bg-slate-900/80 border border-slate-800 p-3 rounded-xl">
-                            <span className="text-slate-400 block">{t.catName}</span>
-                            <span className="font-mono font-bold text-slate-200 text-sm mt-1 block">
-                              {(riskData.base_models.cat_prob * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+> یک سامانه هوشمند تحلیل و ارزیابی ریسک تصادفات رانندگی با استفاده از XGBoost، LightGBM، CatBoost، خوشه‌بندی جغرافیایی، Stacking، کالیبراسیون احتمال و Flask REST API که برای پنجمین دوره نمایشگاه اختراعات و نوآوری INNOVERSE توسعه داده شده است.
 
-            {activeTab === 'map' && (
-              <LeafletMapComponent
-                lat={lat}
-                lng={lng}
-                cityName={cityName}
-                stateName={stateCode}
-                persona={persona}
-                t={t}
-                onSelectRecordForML={(rec) => {
-                  setTemp(rec.temp);
-                  setVis(rec.visibility);
-                  setHour(rec.hour);
-                  setTrafficSignal(rec.trafficSignal);
-                  setCrossing(rec.crossing);
-                  setJunction(rec.junction);
-                  setActiveTab('predictive');
-                }}
-              />
-            )}
+---
 
-            {activeTab === 'simulator' && (
-              <WhatIfSimulatorComponent t={t} currentInputs={currentInputs} />
-            )}
+# 🔑 کلیدواژه‌ها
 
-            {activeTab === 'ai' && (
-              <AiRecommendationsComponent t={t} riskData={riskData} currentInputs={currentInputs} />
-            )}
+```text
+Artificial Intelligence
+Machine Learning
+Road Safety
+Accident Prediction
+Risk Prediction
+Traffic Safety
+XGBoost
+LightGBM
+CatBoost
+Stacking
+Ensemble Learning
+Isotonic Regression
+Geospatial Machine Learning
+KMeans
+Python
+Flask
+REST API
+INNOVERSE
+```
 
-            {activeTab === 'roi' && (
-              <EconomicRoiComponent t={t} riskData={riskData} />
-            )}
-          </main>
-        </div>
-      );
-    }
+---
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
-</body>
-</html>
+# ⚠️ سلب مسئولیت
+
+این پروژه یک سیستم تحقیقاتی و آزمایشی مبتنی بر هوش مصنوعی و یادگیری ماشین است.
+
+خروجی مدل بر اساس داده‌های تاریخی و تعریف Target مورد استفاده در زمان آموزش تولید می‌شود و نباید به عنوان تضمین وقوع یا عدم وقوع تصادف، رتبه‌بندی رسمی ایمنی جاده، توصیه اضطراری یا جایگزین نظر متخصصان ایمنی و مهندسی ترافیک استفاده شود.
+
+قبل از استفاده از سیستم در محیط‌های واقعی و حساس به ایمنی، اعتبارسنجی مستقل و گسترده ضروری است.
+
+---
+
+# 👨‍💻 توسعه‌دهنده
+
+**Shervin Moosavi**
+
+پروژه هوش مصنوعی و یادگیری ماشین
+
+**INNOVERSE – Invention & Innovation Expo**
+
+---
+
+# ⭐ خلاصه نهایی معماری
+
+```text
+داده‌های تاریخی تصادفات
+          │
+          ▼
+پاک‌سازی داده
+          │
+          ▼
+استخراج ویژگی‌های زمانی
+          │
+          ▼
+ساخت Risk Class
+          │
+          ▼
+مهندسی ویژگی
+          │
+          ▼
+خوشه‌بندی جغرافیایی
+          │
+          ▼
+┌─────────┬─────────┬─────────┐
+│ XGBoost │ LightGBM│ CatBoost│
+└────┬────┴────┬────┴────┬────┘
+     └─────────┼─────────┘
+               ▼
+          Stacking
+               │
+               ▼
+       Logistic Regression
+               │
+               ▼
+      Isotonic Calibration
+               │
+               ▼
+       Optimal Threshold
+               │
+               ▼
+       Risk Probability
+               │
+        ┌──────┴──────┐
+        ▼             ▼
+      test.py      Flask API
+```
+
+---
+
+## 🌟 نتیجه
+
+این پروژه یک Pipeline کامل هوش مصنوعی را از:
+
+**داده → پردازش → مهندسی ویژگی → مدل‌های Ensemble → Stacking → Calibration → پیش‌بینی → API**
+
+پیاده‌سازی می‌کند و می‌تواند در آینده با داده‌های Real-Time، ترافیک، آب‌وهوا، نقشه، Explainable AI و مدل‌های پیشرفته‌تر توسعه داده شود.
