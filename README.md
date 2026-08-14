@@ -154,8 +154,8 @@ TrafficVision AI is built as an enterprise-grade full-stack hybrid platform with
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/trafficvision-ai.git
-cd trafficvision-ai
+git clone https://github.com/shervinmousavi911-blip/Ta3.git
+cd 
 ```
 
 ### 2️⃣ Install Dependencies
