@@ -2,18 +2,18 @@
 
 <div align="center">
 
-[![INNOVERSE Expo](https://img.shields.io/badge/Competition-5th%20INNOVERSE%20Invention%20%26%20Innovation%20Expo-ff6b6b?style=for-the-badge&logo=target)](https://innoverse-expo.com)
-[![Developed By](https://img.shields.io/badge/Developed%20By-Team%20ta3-4f46e5?style=for-the-badge&logo=github)](https://github.com)
-[![Dataset]([https://img.shields.io/badge/Dataset-US%20Accidents%20(7.7M%20Records)-10b981?style=for-the-badge&logo=databricks](https://storage.googleapis.com/kaggle-data-sets/4921403/8286038/bundle/archive.zip?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=gcp-kaggle-com%40kaggle-161607.iam.gserviceaccount.com%2F20260814%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260814T074606Z&X-Goog-Expires=259200&X-Goog-SignedHeaders=host&X-Goog-Signature=14908ecbb1a02f9b98a952c8603cbace50020e65358f9bbd5d930afe5da5093b3b5333e754d28db70e26a7b2fe21a22c8157428f352da523a094b1a73a3fec7412977958a2526a5a97003978afa8c16e78fd5e43493083bb6276e1746e500a09484e8fe39a76dde03ea41db8def23898554a894e49ed54628672495bc3a7ac7e25ea0017cd2823c8cbc565533bdc4dede31a51bae4fb77c6e009066f8eb36022d5ed5baa18a2cce9111d471350ad84e98a4aa869c83845710e2384fb2cd31ed3379b49d66b564ca79d546cad480217f466c28330169f1e65ca96b4898cdb9022f958f83e129d8f45fe115a8cb80f9d6026e5c68e34874ac38fcd5a46d7ebdd6c))](https://www.kaggle.com/datasets/sobhanmohammadpour/us-accidents)
-[![Python](https://img.shields.io/badge/Python-3.10%2B%20%7C%20Flask-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![INNOVERSE Expo](https://img.shields.io/badge/Competition-5th%20INNOVERSE%20Invention%20%26%20Innovation%20Expo-ff6b6b?style=for-the-badge&logo=target)](#-team--acknowledgements)
+[![Developed By](https://img.shields.io/badge/Developed%20By-Team%20ta3-4f46e5?style=for-the-badge&logo=github)](#-team--acknowledgements)
+[![Dataset](https://img.shields.io/badge/Dataset-US%20Accidents%20(7.7M%20Records)-10b981?style=for-the-badge&logo=kaggle)](https://www.kaggle.com/datasets/kerynhan/us-accidents-march23)
+[![Python](https://img.shields.io/badge/Python-3.10%2B%20%7C%20Flask-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Express%20%7C%20React-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 **An End-to-End Deep Ensemble Machine Learning Platform for Proactive Accident Risk Forecasting, Spatial Hotspot Identification, and Real-Time Transportation Safety Auditing.**
 
 *Submitted to **The 5th Edition of the INNOVERSE Invention & Innovation Expo – Online Edition** by **Team ta3**.*
 
-[Key Features](#-key-features) • [ML Architecture](#-machine-learning-architecture) • [Dataset Profiling](#-dataset--features) • [System Architecture](#-system-architecture) • [Quick Start](#-installation--quick-start) • [API Reference](#-api-endpoints)
+[Key Features](#-key-features) • [ML Architecture](#-machine-learning-architecture) • [Dataset & kagglehub](#-dataset-acquisition--features) • [System Architecture](#-system-architecture) • [Quick Start](#-installation--quick-start) • [API Reference](#-api-endpoints)
 
 </div>
 
@@ -110,9 +110,30 @@ The prediction engine utilizes a high-performance **Two-Tier Stacking Ensemble A
 
 ---
 
-## 📊 Dataset & Features
+## 📥 Dataset Acquisition & Features
 
-The model is trained on the **US Accidents Dataset (March 2023 Update)**, comprising **7.7+ Million records** spanning from February 2016 to March 2023 across the contiguous United States.
+The model is trained and evaluated on the **US Accidents Dataset (March 2023 Update)**, comprising **7.7+ Million records** spanning from February 2016 to March 2023 across 49 US states.
+
+### ⚡ Automated Dataset Download (via `kagglehub`)
+
+You can automatically download the official dataset in Python using `kagglehub`:
+
+```bash
+pip install kagglehub
+```
+
+```python
+import kagglehub
+
+# Download latest version of US Accidents dataset
+path = kagglehub.dataset_download("kerynhan/us-accidents-march23")
+
+print("Path to dataset files:", path)
+```
+
+The downloaded directory contains `US_Accidents_March23.csv` (approximately 3.0 GB uncompressed, 7,728,394 rows and 46+ features).
+
+### 📋 Key Feature Taxonomy
 
 | Category | Key Variables |
 | :--- | :--- |
@@ -154,8 +175,8 @@ TrafficVision AI is built as an enterprise-grade full-stack hybrid platform with
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/shervinmousavi911-blip/Ta3.git
-cd 
+git clone https://github.com/your-username/trafficvision-ai.git
+cd trafficvision-ai
 ```
 
 ### 2️⃣ Install Dependencies
@@ -277,6 +298,12 @@ GET /api/weather/live?lat=34.0522&lng=-118.2437
 
 Presented at:
 **The 5th Edition of the INNOVERSE Invention & Innovation Expo – Online Edition**
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](https://opensource.org/licenses/MIT) page for details.
 
 ---
 
