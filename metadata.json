@@ -1,0 +1,8 @@
+{
+  "name": "TrafficVision AI - Predictive Road Safety Analytics Platform",
+  "description": "An AI-powered RAG spatial analytics platform for real-time traffic accident risk assessment, hotspot detection, interactive AI copilot, and road infrastructure optimization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
